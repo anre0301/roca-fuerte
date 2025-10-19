@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Canción</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(180deg, #f9fafc 0%, #e9ecef 100%);
+      margin: 0;
+      padding: 0;
+      color: #1a1a1a;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+    }
+    .container {
+      width: 94%;
+      max-width: 700px;
+      background: #ffffffee;
+      border-radius: 15px;
+      padding: 22px 18px;
+      box-shadow: 0 5px 18px rgba(0,0,0,0.07);
+      margin-top: 25px;
+      position: relative;
+    }
+    h1 {
+      text-align: center;
+      font-size: 1.4rem;
+      margin-bottom: 8px;
+      color: #212529;
+    }
+    .tone {
+      text-align: center;
+      font-weight: 600;
+      font-size: 0.7rem;
+      margin-bottom: 12px;
+      cursor: pointer;
+      position: relative;
+      display: inline-block;
+      left: 50%;
+      transform: translateX(-50%);
+      user-select: none;
+    }
+    .tone:hover {
+      color: #0077b6;
+      text-decoration: underline;
+    }
+    .tone-menu {
+      position: absolute;
+      top: 120%;
+      left: 50%;
+      transform: translateX(-50%) scale(0.95);
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+      display: none;
+      flex-direction: column;
+      z-index: 10;
+      opacity: 0;
+      transition: all 0.2s ease;
+      width: 170px;
+    }
+    .tone-menu.show {
+      display: flex;
+      opacity: 1;
+      transform: translateX(-50%) scale(1);
+    }
+    .tone-menu button {
+      background: white;
+      border: none;
+      border-bottom: 1px solid #eee;
+      padding: 8px 16px;
+      font-weight: 600;
+      color: #333;
+      cursor: pointer;
+      font-size: 0.7rem;
+    }
+    .tone-menu button:hover {
+      background: #0077b6;
+      color: white;
+    }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 15px;
+    }
+    button, select {
+      background: #fff;
+      border: 2px solid #0077b6;
+      color: #222;
+      padding: 7px 10px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.7rem;
+      transition: all 0.25s ease-in-out;
+    }
+    button:hover, select:hover {
+      background: #0077b6;
+      color: #fff;
+      transform: translateY(-1px);
+    }
+    .tone-original {
+      background: #fff3cd;
+      border: 2px solid #ffb703;
+      color: #7a5a00;
+    }
+    .back-btn {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: none;
+      border: 2px solid #ccc;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      color: #666;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.25s;
+    }
+    .back-btn:hover {
+      background: #0077b6;
+      color: white;
+      border-color: #0077b6;
+    }
+    pre {
+      white-space: pre-wrap;
+      font-family: 'Courier New', monospace;
+      background: #fff;
+      border-radius: 10px;
+      padding: 15px;
+      line-height: 1.4;
+      color: #333;
+      border: 1px solid #eee;
+      font-size: clamp(1rem, 2vw + 0.5rem, 2rem);
+      word-wrap: break-word;
+      max-width: 100%;
+      box-sizing: border-box;
+    }
+    .chord {
+      color: #0077b6;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: clamp(1rem, 2vw + 0.5rem, 2rem);
+    }
+    .chord:hover {
+      color: #ffb703;
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+    }
+    .modal-content {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      width: 85%;
+      max-width: 400px;
+      text-align: center;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+    .modal-content select {
+      width: 100%;
+      margin-bottom: 12px;
+      padding: 7px;
+    }
+    .modal-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+    }
+    .chord-preview {
+      position: fixed;
+      bottom: 18px;
+      right: 18px;
+      background: #fff;
+      border: 2px solid #0077b6;
+      border-radius: 10px;
+      padding: 7px 14px;
+      color: #222;
+      font-weight: 600;
+      font-size: 0.85rem;
+      display: none;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+    }
+#songLyrics {
+  font-size: clamp(0.8rem, 1.2vw + 0.3rem, 1.2rem);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-weight: 600;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-width: 100%;
+  box-sizing: border-box;
+  line-height: 1.5;
+  background: #fff;
+  border-radius: 10px;
+  padding: 15px;
+  color: #222;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+.chord {
+  font-size: clamp(0.8rem, 1.2vw + 0.3rem, 1.2rem);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-weight: 600;
+  color: #0077b6;
+  cursor: pointer;
+  white-space: nowrap; /* para no partir acordes */
+}
+
+.chord:hover {
+  color: #ffb703;
+}
+
+
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+<div class="container">
+  <button class="back-btn" onclick="history.back()">←</button>
+  <h1 id="songTitle">Cargando...</h1>
+  <div class="tone" id="tone">
+    🎵 Tono actual: <span id="toneValue">C</span>
+    <div class="tone-menu" id="toneMenu">
+      <button id="btnHalfUp">🔼 Subir ½ tono</button>
+      <button id="btnToneUp">🔼 Subir 1 tono</button>
+      <button id="btnHalfDown">🔽 Bajar ½ tono</button>
+      <button id="btnToneDown">🔽 Bajar 1 tono</button>
+      <button id="btnReset">🎵 Tono original</button>
+    </div>
+  </div>
+  <div class="controls">
+    <select id="toneSelect"></select>
+    <button class="tone-original" id="btnOriginalTone">🎵 Tono original</button>
+    <button id="addToAlbumBtn">➕ Agregar a álbum</button>
+  </div>
+  <pre id="songLyrics"></pre>
+</div>
+<div class="modal" id="albumModal">
+  <div class="modal-content">
+    <h3>Agregar a álbum</h3>
+    <select id="albumSelect"><option disabled selected>Cargando álbumes...</option></select>
+    <label style="display:block;margin:5px 0 2px 0;font-weight:600;">Tono a guardar:</label>
+    <select id="toneSaveExact">
+      <option disabled selected>Elige tono...</option>
+      <option value="original">Tono original</option>
+      <option value="actual">Tono actual mostrado</option>
+      <option value="choose">Elegir otro tono...</option>
+    </select>
+    <div id="exactTonePicker" style="display:none;margin-top:5px;">
+      <select id="exactToneSelect"></select>
+    </div>
+    <div class="modal-buttons">
+      <button id="cancelModal">Cancelar</button>
+      <button id="confirmAdd">Guardar</button>
+    </div>
+  </div>
+</div>
+<div class="chord-preview" id="chordPreview"></div>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+
+const scale = [
+  "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B",
+  "Cm", "C#m", "Dm", "D#m", "Em", "Fm", "F#m", "Gm", "G#m", "Am", "A#m", "Bm"
+];
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBt48uLSA1IhO36jXTbdOh7o-O8zQ2VAQ4",
+  authDomain: "roca-fuerte-79965.firebaseapp.com",
+  projectId: "roca-fuerte-79965",
+  storageBucket: "roca-fuerte-79965.appspot.com",
+  messagingSenderId: "997970282203",
+  appId: "1:997970282203:web:e2dcb13d7be47d753eeefe"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+let currentUser = null;
+let currentSong = null;
+let currentTone = null;
+let originalTone = null;
+
+const tone = document.getElementById("tone");
+const toneMenu = document.getElementById("toneMenu");
+const toneValue = document.getElementById("toneValue");
+const toneSelect = document.getElementById("toneSelect");
+const btnOriginalTone = document.getElementById("btnOriginalTone");
+
+tone.addEventListener("click", e => {
+  e.stopPropagation();
+  toneMenu.classList.toggle("show");
+});
+
+window.addEventListener("click", () => {
+  toneMenu.classList.remove("show");
+});
+
+document.getElementById("btnHalfUp").addEventListener("click", () => {
+  transposeHalf(1);
+  toneMenu.classList.remove("show");
+});
+document.getElementById("btnToneUp").addEventListener("click", () => {
+  transposeHalf(2);
+  toneMenu.classList.remove("show");
+});
+document.getElementById("btnHalfDown").addEventListener("click", () => {
+  transposeHalf(-1);
+  toneMenu.classList.remove("show");
+});
+document.getElementById("btnToneDown").addEventListener("click", () => {
+  transposeHalf(-2);
+  toneMenu.classList.remove("show");
+});
+
+document.getElementById("btnReset").addEventListener("click", () => {
+  resetTone();
+  toneMenu.classList.remove("show");
+});
+
+// Botón para regresar al tono original funcionando correctamente
+btnOriginalTone.addEventListener("click", () => {
+  resetTone();
+});
+
+async function waitForUser() {
+  return new Promise(resolve => {
+    onAuthStateChanged(auth, user => {
+      if (user) {
+        currentUser = user;
+        resolve(user);
+      } else {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Atención',
+          text: 'Debes iniciar sesión primero.',
+          confirmButtonColor: '#0077b6'
+        }).then(() => {
+          window.location.href = "login.html";
+        });
+      }
+    });
+  });
+}
+
+const addBtn = document.getElementById("addToAlbumBtn");
+const modal = document.getElementById("albumModal");
+const cancelModal = document.getElementById("cancelModal");
+const confirmAdd = document.getElementById("confirmAdd");
+const albumSelect = document.getElementById("albumSelect");
+const toneSaveExact = document.getElementById("toneSaveExact");
+const exactTonePicker = document.getElementById("exactTonePicker");
+const exactToneSelect = document.getElementById("exactToneSelect");
+
+scale.forEach(t => {
+  const opt1 = document.createElement("option");
+  opt1.value = t;
+  opt1.textContent = t;
+  toneSelect.appendChild(opt1);
+
+  const opt2 = opt1.cloneNode(true);
+  exactToneSelect.appendChild(opt2);
+});
+
+toneSaveExact.innerHTML = `
+  <option disabled selected>Elige tono...</option>
+  <option value="original">Tono original</option>
+  <option value="actual">Tono actual mostrado</option>
+  <option value="choose">Elegir otro tono...</option>
+`;
+
+toneSaveExact.addEventListener("change", () => {
+  exactTonePicker.style.display = toneSaveExact.value === "choose" ? "block" : "none";
+});
+
+addBtn.addEventListener("click", async () => {
+  await waitForUser();
+  modal.style.display = "flex";
+  loadUserAlbums(currentUser.uid);
+});
+
+cancelModal.addEventListener("click", () => {
+  modal.style.display = "none";
+});
+
+confirmAdd.addEventListener("click", async () => {
+  if (!currentUser) {
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: "Tu sesión no se ha cargado.",
+      confirmButtonColor: "#0077b6",
+    });
+    return;
+  }
+
+  const albumName = albumSelect.value;
+  const toneOption = toneSaveExact.value;
+  if (!albumName) {
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: "Por favor selecciona un álbum.",
+      confirmButtonColor: "#0077b6",
+    });
+    return;
+  }
+  if (!toneOption || toneOption === "Elige tono...") {
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: "Por favor selecciona el tono para guardar la canción.",
+      confirmButtonColor: "#0077b6",
+    });
+    return;
+  }
+
+  let toneToSave = originalTone;
+  if (toneOption === "actual") toneToSave = currentTone;
+  else if (toneOption === "choose") toneToSave = exactToneSelect.value;
+
+  if (!toneToSave) {
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: "Por favor selecciona el tono específico.",
+      confirmButtonColor: "#0077b6",
+    });
+    return;
+  }
+
+  const songData = {
+    title: currentSong.title,
+    tone: toneToSave,
+    dateAdded: new Date().toISOString(),
+  };
+
+  try {
+    const userRef = doc(db, "users", currentUser.uid);
+    const userSnap = await getDoc(userRef);
+    if (!userSnap.exists()) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Usuario no encontrado o sin álbumes.",
+        confirmButtonColor: "#0077b6",
+      });
+      return;
+    }
+    let albums = userSnap.data().albums || [];
+    let album = albums.find((a) => a.name === albumName);
+    if (!album) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Álbum no encontrado.",
+        confirmButtonColor: "#0077b6",
+      });
+      return;
+    }
+    if (!album.songs) album.songs = [];
+    album.songs.push(songData);
+    await updateDoc(userRef, { albums });
+    Swal.fire({
+      icon: "success",
+      title: "¡Éxito!",
+      text: `🎵 Canción agregada en el tono ${toneToSave}`,
+      timer: 2200,
+      timerProgressBar: true,
+      showConfirmButton: false,
+    });
+    modal.style.display = "none";
+  } catch (e) {
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: "Ocurrió un error al guardar la canción.",
+      confirmButtonColor: "#0077b6",
+    });
+  }
+});
+
+async function loadUserAlbums(uid) {
+  albumSelect.innerHTML = `<option disabled selected>Cargando álbumes...</option>`;
+  const userDoc = await getDoc(doc(db, "users", uid));
+  albumSelect.innerHTML = "";
+  if (!userDoc.exists() || !userDoc.data().albums) {
+    albumSelect.innerHTML = `<option disabled>No tienes álbumes aún</option>`;
+    return;
+  }
+  userDoc.data().albums.forEach((album) => {
+    const opt = document.createElement("option");
+    opt.value = album.name;
+    opt.textContent = album.name;
+    albumSelect.appendChild(opt);
+  });
+}
+
+const urlParams = new URLSearchParams(window.location.search);
+const songId = urlParams.get("id");
+
+async function loadSong() {
+  const res = await fetch("songs.json");
+  const songs = await res.json();
+  const song = songs.find((s) => s.id == songId);
+  if (!song)
+    return Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: "Canción no encontrada.",
+      confirmButtonColor: "#0077b6",
+    });
+  currentSong = song;
+  currentTone = song.tone;
+  originalTone = song.tone;
+  document.getElementById("songTitle").innerText = song.title;
+
+  toneValue.innerText = song.tone;
+  renderLyrics([...(song.intro ? [`Intro: ${song.intro}\n`] : []), ...song.chords]);
+
+  const select = document.getElementById("toneSelect");
+  select.innerHTML = "";
+  scale.forEach((t) => {
+    const opt = document.createElement("option");
+    opt.value = t;
+    opt.textContent = t;
+    if (t === song.tone) opt.selected = true;
+    select.appendChild(opt);
+  });
+  select.addEventListener("change", () => {
+    const newTone = select.value;
+    toneValue.innerText = newTone;
+    renderLyrics(transpose(song.chords, song.tone, newTone));
+    currentTone = newTone;
+  });
+}
+
+function getChordBase(chord) {
+  const m = chord.match(/^([A-G][#b]?)(m?)/);
+  return m ? { note: m[1], minor: !!m[2] } : { note: chord, minor: false };
+}
+function transpose(lyrics, fromTone, toTone) {
+  const allTones = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+  const idx = (n) => allTones.indexOf(n);
+
+  const from = getChordBase(fromTone);
+  const to = getChordBase(toTone);
+  let fromIdx = idx(from.note);
+  let toIdx = idx(to.note);
+  let semitones = (toIdx - fromIdx + 12) % 12;
+
+  return lyrics.map((line) =>
+    line.replace(/([A-G][#b]?m?)/g, function (match) {
+      const orig = getChordBase(match);
+      let nidx = (idx(orig.note) + semitones) % 12;
+      let newChord = allTones[nidx];
+      if (orig.minor) newChord += "m";
+      return newChord;
+    })
+  );
+}
+function renderLyrics(lyrics) {
+  const pre = document.getElementById("songLyrics");
+  pre.innerHTML = lyrics
+    .map((line) =>
+      line.replace(
+        /([A-G][#b]?m?)/g,
+        '<span class="chord" onclick="showChordPreview(\'$1\')">$1</span>'
+      )
+    )
+    .join("\n");
+}
+
+window.showChordPreview = function (chord) {
+  const preview = document.getElementById("chordPreview");
+  preview.innerText = `🎸 ${chord}`;
+  preview.style.display = "block";
+  setTimeout(() => (preview.style.display = "none"), 1600);
+};
+
+function transposeHalf(d) {
+  const currentIdx = scale.indexOf(currentTone);
+  const newIdx = (currentIdx + d + scale.length) % scale.length;
+  const newTone = scale[newIdx];
+  document.getElementById("toneSelect").value = newTone;
+  document.getElementById("toneValue").innerText = newTone;
+  renderLyrics(transpose(currentSong.chords, originalTone, newTone));
+  currentTone = newTone;
+}
+
+function transposeTone(d) {
+  transposeHalf(2 * d);
+}
+
+function resetTone() {
+  document.getElementById("toneSelect").value = originalTone;
+  document.getElementById("toneValue").innerText = originalTone;
+  renderLyrics(currentSong.chords);
+  currentTone = originalTone;
+}
+
+loadSong();
+
+</script>
+</body>
+</html>

@@ -1,0 +1,136 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background: #f7f8fc;
+  color: #222;
+  margin: 0;
+  padding: 0;
+}
+
+header {
+  padding: 25px;
+  text-align: center;
+  background: white;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+  margin: 0;
+  font-weight: 600;
+  color: #4b0082;
+}
+
+.search-container {
+  display: flex;
+  justify-content: center;
+  margin: 40px 0;
+}
+
+.search-container input {
+  width: 60%;
+  padding: 12px 18px;
+  border: 2px solid #ccc;
+  border-radius: 30px;
+  outline: none;
+  transition: all 0.3s;
+  font-size: 1em;
+}
+
+.search-container input:focus {
+  border-color: #6a0dad;
+  box-shadow: 0 0 10px rgba(106, 13, 173, 0.3);
+}
+
+.results {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  padding-bottom: 40px;
+}
+
+.song-card {
+  width: 80%;
+  background: white;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.song-card:hover {
+  transform: scale(1.03);
+}
+
+.song-card h2 {
+  margin: 0;
+  color: #6a0dad;
+}
+
+.song-card p {
+  margin: 5px 0 0;
+  color: #444;
+}
+
+pre {
+  white-space: pre-wrap;
+  font-family: monospace;
+  background: #fff;
+  padding: 25px;
+  border-radius: 15px;
+  line-height: 1.6;
+  font-size: 1rem;
+  color: #222;
+}
+
+.chord {
+  color: #ff7b00;
+  font-weight: bold;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.chord:hover {
+  color: #e85d04;
+  text-decoration: underline;
+}
+
+.controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+button {
+  background: #6a0dad;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button:hover {
+  background: #4b0082;
+}
+
+.chord-diagram {
+  display: none;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  padding: 10px;
+  text-align: center;
+}
+
+.chord-diagram img {
+  width: 100px;
+}

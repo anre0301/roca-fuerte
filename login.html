@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inicio de Sesión | Roca Fuerte</title>
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(135deg, #1c1f26, #3a6073);
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .login-container {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(20px);
+      border-radius: 20px;
+      padding: 40px;
+      width: 340px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      animation: fadeIn 0.8s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    h2 { margin-bottom: 20px; font-size: 26px; color: #00e6ff; }
+    input {
+      width: 90%; padding: 12px; margin: 10px 0;
+      border: none; border-radius: 8px;
+      outline: none; font-size: 16px;
+      background-color: rgba(255,255,255,0.15); color: white;
+    }
+    input::placeholder { color: #ccc; }
+    input:focus {
+      box-shadow: 0 0 10px #00e6ff;
+      background-color: rgba(255,255,255,0.2);
+    }
+    button {
+      width: 95%; padding: 12px; margin-top: 15px;
+      background: linear-gradient(45deg, #00e6ff, #0072ff);
+      border: none; border-radius: 8px;
+      color: white; font-weight: bold; font-size: 16px;
+      cursor: pointer; transition: transform 0.2s;
+    }
+    button:hover { transform: scale(1.03); }
+    .toggle { margin-top: 18px; font-size: 14px; color: #ccc; }
+    .toggle span { color: #00e6ff; cursor: pointer; font-weight: 600; }
+    .msg { margin-top: 14px; font-size: 14px; min-height: 24px; }
+    .msg.error { color: #ff9999; }
+    .msg.ok { color: #9fffd6; }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <h2 id="title">Iniciar Sesión</h2>
+
+    <input type="email" id="email" placeholder="Correo electrónico" />
+    <input type="password" id="password" placeholder="Contraseña" />
+    <button id="loginBtn">Ingresar</button>
+
+    <div class="toggle">
+      ¿No tienes cuenta? <span id="registerToggle">Regístrate</span>
+    </div>
+
+    <div class="msg" id="welcomeMessage"></div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import {
+      getAuth,
+      createUserWithEmailAndPassword,
+      signInWithEmailAndPassword
+    } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+    import {
+      getFirestore,
+      doc,
+      setDoc,
+      getDoc
+    } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+    // 🚀 CONFIG FIREBASE
+    const firebaseConfig = {
+      apiKey: "AIzaSyBt48uLSA1IhO36jXTbdOh7o-O8zQ2VAQ4",
+      authDomain: "roca-fuerte-79965.firebaseapp.com",
+      projectId: "roca-fuerte-79965",
+      storageBucket: "roca-fuerte-79965.firebasestorage.app",
+      messagingSenderId: "997970282203",
+      appId: "1:997970282203:web:e2dcb13d7be47d753eeefe"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const email = document.getElementById("email");
+    const password = document.getElementById("password");
+    const loginBtn = document.getElementById("loginBtn");
+    const title = document.getElementById("title");
+    const toggle = document.getElementById("registerToggle");
+    const welcomeMessage = document.getElementById("welcomeMessage");
+
+    let isRegistering = false;
+
+    // Álbumes predeterminados
+    const defaultAlbums = [
+      { name: "Popurris", icon: "🎶", link: "albumes.html" },
+      { name: "Canciones Mujer", icon: "💃", link: "albumes.html" },
+      { name: "Adoración", icon: "🙏", link: "albumes.html" },
+      { name: "Rápidas", icon: "⚡", link: "albumes.html" },
+      { name: "Juveniles", icon: "🎤", link: "albumes.html" }
+    ];
+
+    // Alternar entre login / registro
+    toggle.addEventListener("click", () => {
+      isRegistering = !isRegistering;
+      title.textContent = isRegistering ? "Crear Cuenta" : "Iniciar Sesión";
+      loginBtn.textContent = isRegistering ? "Registrarme" : "Ingresar";
+      toggle.innerHTML = isRegistering
+        ? '¿Ya tienes cuenta? <span>Inicia sesión</span>'
+        : '¿No tienes cuenta? <span>Regístrate</span>';
+      welcomeMessage.textContent = "";
+      welcomeMessage.className = "msg";
+    });
+
+    async function ensureUserDoc(uid, emailValue) {
+      try {
+        const userRef = doc(db, "users", uid);
+        const snap = await getDoc(userRef);
+        if (!snap.exists()) {
+          await setDoc(userRef, { email: emailValue, albums: defaultAlbums });
+          console.log("Documento de usuario creado con álbumes por defecto.");
+        }
+      } catch (err) {
+        console.error("Error en ensureUserDoc:", err);
+      }
+    }
+
+    // 🚀 Manejar login o registro
+    loginBtn.addEventListener("click", async () => {
+      const emailValue = email.value.trim();
+      const passValue = password.value.trim();
+
+      welcomeMessage.textContent = "";
+      welcomeMessage.className = "msg";
+
+      if (!emailValue || !passValue) {
+        welcomeMessage.textContent = "Por favor completa todos los campos.";
+        welcomeMessage.classList.add("error");
+        return;
+      }
+
+      try {
+        if (isRegistering) {
+          // REGISTRAR NUEVO USUARIO
+          const userCred = await createUserWithEmailAndPassword(auth, emailValue, passValue);
+          const user = userCred.user;
+          await setDoc(doc(db, "users", user.uid), {
+            email: user.email,
+            albums: defaultAlbums
+          });
+          welcomeMessage.textContent = "Cuenta creada con éxito. Ahora inicia sesión.";
+          welcomeMessage.classList.add("ok");
+          isRegistering = false;
+          title.textContent = "Iniciar Sesión";
+          loginBtn.textContent = "Ingresar";
+          toggle.innerHTML = '¿No tienes cuenta? <span>Regístrate</span>';
+        } else {
+          // LOGIN EXISTENTE
+          const userCred = await signInWithEmailAndPassword(auth, emailValue, passValue);
+          const user = userCred.user;
+          await ensureUserDoc(user.uid, user.email);
+
+          // 🧠 Guardar sesión global
+          localStorage.setItem("user", JSON.stringify({
+            uid: user.uid,
+            email: user.email
+          }));
+
+          welcomeMessage.textContent = `Bienvenido, ${user.email}`;
+          welcomeMessage.classList.add("ok");
+
+          setTimeout(() => {
+            window.location.href = "index.html";
+          }, 1000);
+        }
+      } catch (error) {
+        console.error("Firebase error:", error);
+        const code = error.code || "unknown";
+        let friendly = "Ocurrió un error.";
+        switch (code) {
+          case "auth/user-not-found": friendly = "Usuario no registrado."; break;
+          case "auth/wrong-password": friendly = "Contraseña incorrecta."; break;
+          case "auth/invalid-email": friendly = "Correo inválido."; break;
+          case "auth/email-already-in-use": friendly = "Correo ya registrado."; break;
+          case "auth/weak-password": friendly = "La contraseña debe tener al menos 6 caracteres."; break;
+        }
+        welcomeMessage.innerHTML = `<strong>${friendly}</strong><br><small style="opacity:.8">${code}</small>`;
+        welcomeMessage.classList.add("error");
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mi Biblioteca Musical</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(180deg, #f5f7fa, #c3cfe2);
+      margin: 0;
+      color: #333;
+      transition: 0.3s;
+    }
+    header {
+      background: linear-gradient(135deg, #0077b6, #00b4d8);
+      color: white;
+      padding: 20px 15px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    header h1 { font-size: 1.4rem; margin: 0; }
+    .profile {
+      position: relative;
+      cursor: pointer;
+      font-size: 1.8rem;
+      background: rgba(255,255,255,0.2);
+      border-radius: 50%;
+      padding: 8px 12px;
+      transition: 0.3s;
+    }
+    .profile:hover { background: rgba(255,255,255,0.3); }
+    .profile-menu {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 45px;
+      background: white;
+      color: #333;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      overflow: hidden;
+      width: 180px;
+      z-index: 200;
+      animation: fadeIn 0.3s ease;
+    }
+    .profile-menu.active { display: block; }
+    .profile-menu button {
+      width: 100%;
+      background: none;
+      border: none;
+      padding: 12px;
+      text-align: left;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .profile-menu button:hover { background: #f0f0f0; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .search-container {
+      max-width: 750px;
+      margin: 25px auto 10px;
+      display: flex;
+      align-items: center;
+      background: #fff;
+      border-radius: 50px;
+      padding: 10px 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+      position: sticky;
+      top: 75px;
+      z-index: 50;
+    }
+    .search-container input {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-size: 1rem;
+      padding: 10px;
+      border-radius: 50px;
+    }
+    .search-container button {
+      background: #0077b6;
+      border: none;
+      color: white;
+      border-radius: 50%;
+      width: 42px;
+      height: 42px;
+      cursor: pointer;
+      transition: 0.3s;
+      font-size: 1.1rem;
+    }
+    .search-container button:hover { background: #005f8e; }
+    .albums {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+      max-width: 700px;
+      margin: 20px auto 40px;
+      padding: 0 15px;
+    }
+    .album {
+      background: white;
+      border-radius: 15px;
+      padding: 20px 10px;
+      text-align: center;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+      cursor: pointer;
+      transition: 0.3s;
+      position: relative;
+    }
+    .album:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+    }
+    .album-icon { font-size: 2rem; margin-bottom: 8px; }
+    .album-name { font-weight: 600; color: #0077b6; }
+    .delete-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: #ff4d4d;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 25px;
+      height: 25px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      line-height: 25px;
+      transition: 0.2s;
+    }
+    .delete-btn:hover { background: #d63031; }
+    .album.add {
+      background: #e0f7ff;
+      border: 2px dashed #0077b6;
+      color: #0077b6;
+    }
+    .results {
+      max-width: 750px;
+      margin: 0 auto 60px;
+      padding: 0 15px;
+      display: none;
+    }
+    .results.active { display: block; }
+    .song-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 15px 20px;
+      margin-bottom: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+      transition: 0.2s;
+      cursor: pointer;
+    }
+    .song-card:hover {
+      transform: scale(1.02);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+    .song-title { font-size: 1.1rem; font-weight: 600; color: #0077b6; }
+    .song-tone, .song-author { color: #555; font-size: 0.9rem; }
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      justify-content: center;
+      align-items: center;
+      z-index: 300;
+    }
+    .modal.active { display: flex; }
+    .modal-content {
+      background: #fff;
+      padding: 25px 30px;
+      border-radius: 15px;
+      text-align: center;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      max-width: 320px;
+      width: 90%;
+      animation: fadeIn 0.3s ease;
+    }
+    .modal-content input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 12px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+    .modal-content button {
+      margin-top: 15px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .modal-content .create-btn {
+      background: #0077b6;
+      color: white;
+    }
+    .modal-content .cancel-btn {
+      background: #ccc;
+      margin-left: 10px;
+    }
+    #confirmModal h3 { color: #d63031; }
+    #confirmModal p { color: #555; font-size: 0.9rem; }
+    footer { text-align: center; padding: 20px; color: #777; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🎵 Min. Roca Fuerte</h1>
+  <div class="profile" id="profileIcon">👤</div>
+  <div class="profile-menu" id="profileMenu">
+    <button id="showEmail">Mi perfil</button>
+    <button id="logoutBtn">Cerrar sesión</button>
+  </div>
+</header>
+
+<div class="search-container">
+  <input type="text" id="searchInput" placeholder="Buscar canciones...">
+  <button id="searchBtn">🔍</button>
+</div>
+
+<section class="albums" id="albums"></section>
+<div class="results" id="results"></div>
+
+<footer>© 2025 - Tu Biblioteca Musical 🎸</footer>
+
+<!-- Modal crear álbum -->
+<div class="modal" id="albumModal">
+  <div class="modal-content">
+    <h3>Crear nuevo álbum</h3>
+    <input type="text" id="albumName" placeholder="Nombre del álbum">
+    <div>
+      <button class="create-btn" id="confirmCreate">Crear</button>
+      <button class="cancel-btn" id="cancelCreate">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal confirmar eliminación -->
+<div class="modal" id="confirmModal">
+  <div class="modal-content">
+    <h3>¿Eliminar álbum?</h3>
+    <p>Esta acción no se puede deshacer.</p>
+    <div>
+      <button class="create-btn" id="yesDelete">Sí, eliminar</button>
+      <button class="cancel-btn" id="noDelete">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBt48uLSA1IhO36jXTbdOh7o-O8zQ2VAQ4",
+  authDomain: "roca-fuerte-79965.firebaseapp.com",
+  projectId: "roca-fuerte-79965",
+  storageBucket: "roca-fuerte-79965.firebasestorage.app",
+  messagingSenderId: "997970282203",
+  appId: "1:997970282203:web:e2dcb13d7be47d753eeefe"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+const albumsDiv = document.getElementById("albums");
+const profileIcon = document.getElementById("profileIcon");
+const profileMenu = document.getElementById("profileMenu");
+const logoutBtn = document.getElementById("logoutBtn");
+const showEmail = document.getElementById("showEmail");
+const modal = document.getElementById("albumModal");
+const albumNameInput = document.getElementById("albumName");
+const confirmCreate = document.getElementById("confirmCreate");
+const cancelCreate = document.getElementById("cancelCreate");
+const confirmModal = document.getElementById("confirmModal");
+const yesDelete = document.getElementById("yesDelete");
+const noDelete = document.getElementById("noDelete");
+
+let currentUserEmail = "";
+let currentUserId = "";
+let currentUserData = {};
+let albumToDelete = null;
+let songs = [];
+
+profileIcon.addEventListener("click", () => profileMenu.classList.toggle("active"));
+logoutBtn.addEventListener("click", async () => {
+  await signOut(auth);
+  localStorage.removeItem("user");
+  window.location.href = "login.html";
+});
+showEmail.addEventListener("click", () => alert("Estás conectado como:\n" + currentUserEmail));
+
+async function loadUserAlbums(uid) {
+  const ref = doc(db, "users", uid);
+  const snap = await getDoc(ref);
+  albumsDiv.innerHTML = "";
+  if (snap.exists()) {
+    currentUserData = snap.data();
+    const data = currentUserData;
+    if (!data.albums) data.albums = [];
+    data.albums.forEach((album, index) => {
+      const div = document.createElement("div");
+      div.className = "album";
+      div.innerHTML = `
+        <button class="delete-btn" title="Eliminar álbum">×</button>
+        <div class="album-icon">${album.icon}</div>
+        <div class="album-name">${album.name}</div>
+      `;
+      div.querySelector(".delete-btn").addEventListener("click", (e) => {
+        e.stopPropagation();
+        albumToDelete = index;
+        confirmModal.classList.add("active");
+      });
+      div.addEventListener("click", () => {
+        window.location.href = `albumes.html?album=${encodeURIComponent(album.name)}`;
+      });
+      albumsDiv.appendChild(div);
+    });
+  }
+  const addAlbum = document.createElement("div");
+  addAlbum.className = "album add";
+  addAlbum.innerHTML = `<div class="album-icon">➕</div><div class="album-name">Crear Álbum</div>`;
+  addAlbum.addEventListener("click", () => modal.classList.add("active"));
+  albumsDiv.appendChild(addAlbum);
+}
+
+cancelCreate.addEventListener("click", () => {
+  modal.classList.remove("active");
+  albumNameInput.value = "";
+});
+
+confirmCreate.addEventListener("click", async () => {
+  const name = albumNameInput.value.trim();
+  if (!name) return alert("Escribe un nombre para el álbum.");
+  const newAlbum = { name, icon: "🎧", link: "#" };
+  const updated = currentUserData.albums ? [...currentUserData.albums, newAlbum] : [newAlbum];
+  await updateDoc(doc(db, "users", currentUserId), { albums: updated });
+  modal.classList.remove("active");
+  albumNameInput.value = "";
+  loadUserAlbums(currentUserId);
+});
+
+noDelete.addEventListener("click", () => {
+  confirmModal.classList.remove("active");
+  albumToDelete = null;
+});
+
+yesDelete.addEventListener("click", async () => {
+  if (albumToDelete === null) return;
+  const ref = doc(db, "users", currentUserId);
+  const snap = await getDoc(ref);
+  if (snap.exists()) {
+    const data = snap.data();
+    const updated = data.albums.filter((_, i) => i !== albumToDelete);
+    await updateDoc(ref, { albums: updated });
+  }
+  confirmModal.classList.remove("active");
+  albumToDelete = null;
+  loadUserAlbums(currentUserId);
+});
+
+async function loadSongs() {
+  const res = await fetch("songs.json");
+  songs = await res.json();
+}
+
+function normalize(s) {
+  return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+
+function searchSongs() {
+  const q = normalize(document.getElementById("searchInput").value);
+  const results = document.getElementById("results");
+  results.innerHTML = "";
+  if (!q) {
+    results.classList.remove("active");
+    results.style.display = "none";
+    albumsDiv.style.display = "grid";
+    return;
+  }
+  const found = songs.filter(s => normalize(s.title).includes(q));
+  if (!found.length) {
+    results.innerHTML = "<p style='text-align:center;color:#777'>😔 No hay coincidencias</p>";
+  } else {
+    found.forEach(s => {
+      const div = document.createElement("div");
+      div.className = "song-card";
+      div.innerHTML = `
+        <div class='song-title'>${s.title}</div>
+        <div class='song-tone'>Tono: ${s.tone}</div>
+        <div class='song-author'>Autor: ${s.autor || 'Desconocido'}</div>
+      `;
+      div.addEventListener("click", () => {
+        window.location.href = `song.html?id=${s.id}`;
+      });
+      results.appendChild(div);
+    });
+  }
+  albumsDiv.style.display = "none";
+  results.style.display = "block";
+  results.classList.add("active");
+}
+
+document.getElementById("searchBtn").addEventListener("click", searchSongs);
+document.getElementById("searchInput").addEventListener("input", searchSongs);
+
+const savedUser = JSON.parse(localStorage.getItem("user"));
+if (savedUser) {
+  currentUserEmail = savedUser.email;
+  currentUserId = savedUser.uid;
+  loadUserAlbums(currentUserId);
+  loadSongs();
+}
+
+onAuthStateChanged(auth, async user => {
+  if (user) {
+    currentUserEmail = user.email;
+    currentUserId = user.uid;
+    localStorage.setItem("user", JSON.stringify({ uid: user.uid, email: user.email }));
+    await loadUserAlbums(user.uid);
+    loadSongs();
+  } else {
+    localStorage.removeItem("user");
+    window.location.href = "login.html";
+  }
+});
+</script>
+</body>
+</html>
