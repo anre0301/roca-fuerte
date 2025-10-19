@@ -56,31 +56,32 @@ main{max-width:800px;margin:1rem auto;padding:1rem;background:#fff;border-radius
 
 /* Contenido canción grande, responsive y legible */
 #songLyrics {
-  font-size: clamp(0.8rem, 1.2vw + 0.3rem, 1.2rem);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Courier New', Courier, monospace;
   font-weight: 600;
-  white-space: pre-wrap;
-  word-break: break-word;
-  max-width: 100%;
-  box-sizing: border-box;
-  line-height: 1.5;
+  font-size: clamp(0.8rem, 1vw + 0.4rem, 1rem);
+  white-space: pre;
+  overflow-x: auto;
+  line-height: 1.4;
   background: #fff;
   border-radius: 10px;
   padding: 15px;
   color: #222;
   border: 1px solid #ddd;
   text-align: left;
+  box-sizing: border-box;
+  max-width: 96vw; /* Ocupa hasta el 96% del ancho de la ventana */
+  min-width: 320px; /* Usa mínimo ancho para celulares pequeños */
+  margin: 0 auto; /* Centrado horizontal */
 }
 
 .chord {
-  font-size: clamp(0.8rem, 1.2vw + 0.3rem, 1.2rem);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  font-weight: 600;
+  font-weight: 700;
   color: #0077b6;
   cursor: pointer;
-  white-space: nowrap; /* para no partir acordes */
+  font-family: inherit;
+  font-size: inherit;
+  white-space: nowrap;
 }
-
 .chord:hover {
   color: #ffb703;
 }
@@ -572,11 +573,11 @@ function getFolderPath() {
 // Mejor regexp para acordes, evita detección en palabras con vocal
 function renderLyrics(lyrics) {
   songLyricsEl.innerHTML = lyrics.map(line => line.replace(/\b([A-G][#b]?(?:m|maj7|sus2|sus4|add9|dim|aug|7)?)\b/g, match => {
-    // Evitar acordes que sean parte de palabras que empiezan con vocales
+    // Solo acordes válidos, evita palabras normales
     const vowels = ['A','E','I','O','U'];
-    const prefix = match.charAt(0);
-    if(!vowels.includes(prefix)) return `<span class="chord" onclick="showChordPreview('${match}')">${match}</span>`;
-    if(match.length > 1) return `<span class="chord" onclick="showChordPreview('${match}')">${match}</span>`;
+    if (!vowels.includes(match.charAt(0)) || match.length > 1) {
+      return `<span class="chord" onclick="showChordPreview('${match}')">${match}</span>`;
+    }
     return match;
   })).join('\n');
 }

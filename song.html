@@ -198,32 +198,32 @@
       display: none;
       box-shadow: 0 3px 10px rgba(0,0,0,0.15);
     }
+	
 #songLyrics {
-  font-size: clamp(0.8rem, 1.2vw + 0.3rem, 1.2rem);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Courier New', Courier, monospace; /* Fuente monoespaciada para alinear acorde y texto */
   font-weight: 600;
-  white-space: pre-wrap;
-  word-break: break-word;
-  max-width: 100%;
-  box-sizing: border-box;
-  line-height: 1.5;
+  font-size: clamp(0.75rem, 1vw + 0.3rem, 1.1rem); /* Tamaño responsivo, un poco más pequeño */
+  white-space: pre; /* Respeta espacios y saltos de línea exactos del JSON */
+  overflow-x: auto; /* Scroll horizontal si se pasa del ancho */
+  line-height: 1.4;
   background: #fff;
   border-radius: 10px;
   padding: 15px;
   color: #222;
   border: 1px solid #ddd;
   text-align: left;
+  box-sizing: border-box;
+  max-width: 95vw; /* No sobrepasa 95% del ancho de la pantalla */
+  margin: 0 auto;
 }
-
 .chord {
-  font-size: clamp(0.8rem, 1.2vw + 0.3rem, 1.2rem);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  font-weight: 600;
+  font-weight: 700;
   color: #0077b6;
   cursor: pointer;
-  white-space: nowrap; /* para no partir acordes */
+  font-family: inherit;
+  font-size: inherit;
+  white-space: nowrap; /* Evita romper acordes */
 }
-
 .chord:hover {
   color: #ffb703;
 }
@@ -585,14 +585,13 @@ function transpose(lyrics, fromTone, toTone) {
 function renderLyrics(lyrics) {
   const pre = document.getElementById("songLyrics");
   pre.innerHTML = lyrics
-    .map((line) =>
-      line.replace(
-        /([A-G][#b]?m?)/g,
+    .map(line =>
+      line.replace(/([A-G][#b]?m?)/g,
         '<span class="chord" onclick="showChordPreview(\'$1\')">$1</span>'
       )
-    )
-    .join("\n");
+    ).join("\n");
 }
+
 
 window.showChordPreview = function (chord) {
   const preview = document.getElementById("chordPreview");
