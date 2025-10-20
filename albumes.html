@@ -4,6 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Álbum</title>
+<link href="https://fonts.googleapis.com/css2?family=Oxygen+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -81,37 +82,47 @@ main{max-width:800px;margin:1rem auto;padding:1rem;background:#fff;border-radius
 }
 
 #songLyrics {
-  font-family: 'Oxygen Mono','lucida console','courier new','courier', monospace;
-  font-size: 13px;
+  font-family: 'Oxygen Mono', 'Lucida Console', 'Courier New', 'Courier', monospace !important;
+  font-size: clamp(12px, 2vw, 16px);
   line-height: 1.35;
-  font-weight: 700; /* <- Cambiado de 550 a 700 */
-  white-space: pre;
-  overflow-x: auto;
-  background: #fff;
-  border-radius: 10px;
-  padding: 14px 8px;
+  font-weight: 700 !important;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
   color: #222;
-  border: 1px solid #ddd;
   text-align: left;
-  box-sizing: border-box;
   width: 100%;
-  max-width: 410px;
-  min-width: 220px;
-  margin: 0 auto;
+  max-width: 100%;
+  min-width: 0;
+
+  /* suavizado de fuente */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+
+  /* sin marco */
+  background: none;
+  border: none;
+  padding: 0;
+
+  /* bajarlo un poco */
+  margin-top: 60px;  /* ajusta el valor a tu gusto */
 }
 
 .chord {
-  font-weight: 700;
+  font-weight: 700 !important;
   color: #0077b6;
   font-family: inherit;
   font-size: inherit;
-  white-space: nowrap;
-  letter-spacing: 0.01em;
+  white-space: normal;  
+  display: inline;
   cursor: pointer;
+  letter-spacing: 0.01em;
 }
+
 .chord:hover {
   color: #ffb703;
 }
+
 
 .modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background: rgba(0,0,0,0.5);justify-content:center;align-items:center;z-index:100;}
 .modal-content{background:white;border-radius:12px;padding:20px;width:85%;max-width:400px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.2);}
@@ -275,64 +286,71 @@ function showElement(el) { el.style.display = 'block'; }
 function hideElement(el) { el.style.display = 'none'; }
 
 // Crear menú contextual para carpetas
+// Crear menú contextual para carpetas
 function createFolderMenu(folder, refreshCb) {
   const menu = document.createElement('div');
   menu.className = 'submenu';
   menu.style.flexDirection = 'column';
 
   const renameBtn = document.createElement('button');
-renameBtn.textContent = 'Renombrar';
-renameBtn.onclick = e => {
-  e.stopPropagation();
-  Swal.fire({
-    title: 'Renombrar Carpeta',
-    input: 'text',
-    inputLabel: 'Nuevo nombre',
-    inputValue: folder.name,
-    showCancelButton: true,
-    confirmButtonText: 'Guardar',
-    cancelButtonText: 'Cancelar',
-    inputAttributes: {
-      autocapitalize: 'off'
-    },
-    customClass: {
-      popup: 'swal2-popup-custom'
-    }
-  }).then(result => {
-    if (result.isConfirmed) {
-      const newName = result.value.trim();
-      if (newName) {
-        folder.name = newName;
-        updateUserData().then(() => refreshCb());
-      } else {
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'El nombre no puede estar vacío',
-          confirmButtonColor: '#0077b6'
-        });
+  renameBtn.textContent = 'Renombrar';
+  renameBtn.onclick = e => {
+    e.stopPropagation();
+    Swal.fire({
+      title: 'Renombrar Carpeta',
+      input: 'text',
+      inputLabel: 'Nuevo nombre',
+      inputValue: folder.name,
+      showCancelButton: true,
+      confirmButtonText: 'Guardar',
+      cancelButtonText: 'Cancelar',
+      inputAttributes: { autocapitalize: 'off' },
+      customClass: { popup: 'swal2-popup-custom' }
+    }).then(result => {
+      if (result.isConfirmed) {
+        const newName = result.value.trim();
+        if (newName) {
+          folder.name = newName;
+          updateUserData().then(() => refreshCb());
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'El nombre no puede estar vacío',
+            confirmButtonColor: '#0077b6'
+          });
+        }
       }
-    }
-    // Ocultar menú contextual después
-    const menu = renameBtn.parentElement;
-    if(menu) menu.style.display = 'none';
-  });
-};
+      const menu = renameBtn.parentElement;
+      if(menu) menu.style.display = 'none';
+    });
+  };
 
   const deleteBtn = document.createElement('button');
   deleteBtn.textContent = 'Eliminar';
   deleteBtn.onclick = e => {
     e.stopPropagation();
-    if (confirm('¿Eliminar carpeta? Se perderán todas sus subcarpetas y canciones.')) {
-      if (navigationStack.length === 0) {
-        const idx = currentAlbum.folders.indexOf(folder);
-        if (idx > -1) currentAlbum.folders.splice(idx, 1);
-      } else if (currentFolder && currentFolder.folders) {
-        const idx = currentFolder.folders.indexOf(folder);
-        if (idx > -1) currentFolder.folders.splice(idx, 1);
+    Swal.fire({
+      icon: 'warning',
+      title: '¿Eliminar carpeta?',
+      text: 'Esta acción no puede revertirse',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Eliminar carpeta de su contenedor correspondiente
+        let idx;
+        if (navigationStack.length === 0) {
+          idx = currentAlbum.folders.indexOf(folder);
+          if (idx > -1) currentAlbum.folders.splice(idx, 1);
+        } else if (currentFolder && currentFolder.folders) {
+          idx = currentFolder.folders.indexOf(folder);
+          if (idx > -1) currentFolder.folders.splice(idx, 1);
+        }
+        updateUserData().then(() => refreshCb());
       }
-      updateUserData().then(() => refreshCb());
-    }
+    });
     menu.style.display = 'none';
   };
 
@@ -696,7 +714,7 @@ scale.forEach(t => {
 
 function transpose(lyrics, from, to) {
   const semitones = (scale.indexOf(to) - scale.indexOf(from) + 12) % 12;
-  return lyrics.map(l => l.replace(/([A-G][#b]?(?:m|maj7|sus2|sus4|add9|dim|aug|7)?)/g, c => transposeChord(c, semitones)));
+  return lyrics.map(l => l.replace(/([A-G][#b]?(?:m|maj7|sus|sus2|sus4|add9|dim|aug|7)?)/g, c => transposeChord(c, semitones)));
 }
 function transposeChord(chord, semitones) {
   const notes = ["C", "C#", "D", "Eb", "E", "F", "F#", "G", "Ab", "A", "Bb", "B"];

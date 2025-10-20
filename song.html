@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+  <link href="https://fonts.googleapis.com/css2?family=Oxygen+Mono:wght@400;700&display=swap" rel="stylesheet">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Canción</title>
@@ -199,10 +200,10 @@
     }
 	
 #songLyrics {
-  font-family: 'Oxygen Mono','lucida console','courier new','courier', monospace;
+  font-family: 'Oxygen Mono', 'Lucida Console', 'Courier New', 'Courier', monospace !important;
   font-size: 13px;
   line-height: 1.35;
-  font-weight: 600; /* <- Cambiado de 550 a 700 */
+  font-weight: 700 !important; /* más gruesa */
   white-space: pre;
   overflow-x: auto;
   background: #fff;
@@ -215,11 +216,15 @@
   width: 100%;
   max-width: 410px;
   min-width: 220px;
-  margin: 0 auto;
+  
+  /* Suavizado de fuente para todos los navegadores */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 .chord {
-  font-weight: 700;
+  font-weight: 700 !important;
   color: #0077b6;
   font-family: inherit;
   font-size: inherit;
@@ -227,10 +232,10 @@
   letter-spacing: 0.01em;
   cursor: pointer;
 }
+
 .chord:hover {
   color: #ffb703;
 }
-
 
 
   </style>
