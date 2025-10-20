@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Canción</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
     body {
       font-family: 'Poppins', sans-serif;
       background: linear-gradient(180deg, #f9fafc 0%, #e9ecef 100%);
@@ -200,33 +199,37 @@
     }
 	
 #songLyrics {
-  font-family: 'Courier New', Courier, monospace; /* Fuente monoespaciada para alinear acorde y texto */
-  font-weight: 600;
-  font-size: clamp(0.75rem, 1vw + 0.3rem, 1.1rem); /* Tamaño responsivo, un poco más pequeño */
-  white-space: pre; /* Respeta espacios y saltos de línea exactos del JSON */
-  overflow-x: auto; /* Scroll horizontal si se pasa del ancho */
-  line-height: 1.4;
+  font-family: 'Oxygen Mono','lucida console','courier new','courier', monospace;
+  font-size: 13px;
+  line-height: 1.35;
+  font-weight: 400;
+  white-space: pre;
+  overflow-x: auto;
   background: #fff;
   border-radius: 10px;
-  padding: 15px;
+  padding: 14px 8px;
   color: #222;
   border: 1px solid #ddd;
   text-align: left;
   box-sizing: border-box;
-  max-width: 95vw; /* No sobrepasa 95% del ancho de la pantalla */
+  width: 100%;
+  max-width: 410px; /* Más angosto, perfecto para móvil */
+  min-width: 220px; /* Opcional, no se hace demasiado chico */
   margin: 0 auto;
 }
 .chord {
   font-weight: 700;
   color: #0077b6;
-  cursor: pointer;
   font-family: inherit;
   font-size: inherit;
-  white-space: nowrap; /* Evita romper acordes */
+  white-space: nowrap;
+  letter-spacing: 0.01em;
+  cursor: pointer;
 }
 .chord:hover {
   color: #ffb703;
 }
+
 
 
   </style>
@@ -282,7 +285,7 @@ import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/
 import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
 
 const scale = [
-  "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B",
+  "C", "C#", "D", "D#","E", "F", "F#", "G", "G#", "A", "A#", "B",
   "Cm", "C#m", "Dm", "D#m", "Em", "Fm", "F#m", "Gm", "G#m", "Am", "A#m", "Bm"
 ];
 
@@ -544,51 +547,128 @@ async function loadSong() {
   const select = document.getElementById("toneSelect");
   select.innerHTML = "";
   scale.forEach((t) => {
-    const opt = document.createElement("option");
-    opt.value = t;
-    opt.textContent = t;
-    if (t === song.tone) opt.selected = true;
-    select.appendChild(opt);
-  });
-  select.addEventListener("change", () => {
-    const newTone = select.value;
-    toneValue.innerText = newTone;
-    renderLyrics(transpose(song.chords, song.tone, newTone));
-    currentTone = newTone;
-  });
+  const opt = document.createElement("option");
+  opt.value = t;
+  opt.textContent = t;
+  select.appendChild(opt);
+});
+
+// Intentar seleccionar la opción equivalente si song.tone está en bemol (Ej Ebm -> D#m/Em mapping)
+function findEquivalentOption(tone) {
+  if (!tone) return null;
+  const root = (String(tone).match(/^([A-G](?:#|b)?)/)||[])[0] || tone;
+  const rest = tone.slice(root.length);
+  const normRoot = flatToSharp(root); // Eb -> D#
+  // buscar opción con ese root + resto o con root original
+  const candidates = [normRoot + rest, root + rest, tone];
+  for (const c of candidates) {
+    const opt = Array.from(select.options).find(o => o.value.toUpperCase() === c.toUpperCase());
+    if (opt) return opt;
+  }
+  return null;
+}
+
+const selectedOpt = findEquivalentOption(song.tone);
+if (selectedOpt) selectedOpt.selected = true;
+
+select.addEventListener("change", () => {
+  const newTone = select.value;
+  const fromTone = currentTone || originalTone || "C";
+
+  toneValue.innerText = newTone;
+
+  const lyricsWithIntro = [
+    ...(currentSong.intro ? [`Intro: ${currentSong.intro}\n`] : []),
+    ...currentSong.chords
+  ];
+
+  // PASAMOS includeIntro = true
+  renderLyrics(transpose(lyricsWithIntro, fromTone, newTone, true));
+  currentTone = newTone;
+});
 }
 
 function getChordBase(chord) {
-  const m = chord.match(/^([A-G][#b]?)(m?)/);
-  return m ? { note: m[1], minor: !!m[2] } : { note: chord, minor: false };
+  // Detecta la nota base (A-G con sostenido o bemol)
+  const m = chord.match(/^([A-G][#b]?)/);
+  return m ? m[1] : chord;
 }
-function transpose(lyrics, fromTone, toTone) {
-  const allTones = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
-  const idx = (n) => allTones.indexOf(n);
 
-  const from = getChordBase(fromTone);
-  const to = getChordBase(toTone);
-  let fromIdx = idx(from.note);
-  let toIdx = idx(to.note);
-  let semitones = (toIdx - fromIdx + 12) % 12;
-
-  return lyrics.map((line) =>
-    line.replace(/([A-G][#b]?m?)/g, function (match) {
-      const orig = getChordBase(match);
-      let nidx = (idx(orig.note) + semitones) % 12;
-      let newChord = allTones[nidx];
-      if (orig.minor) newChord += "m";
-      return newChord;
-    })
-  );
+// ---------- Helpers para notas enharmónicas ----------
+function flatToSharp(note) {
+  // convierte Db -> C#, Eb -> D#, Gb -> F#, Ab -> G#, Bb -> A#
+  if (!note) return note;
+  return note.replace(/Cb/gi, 'B')
+             .replace(/Db/gi, 'C#')
+             .replace(/Eb/gi, 'D#')
+             .replace(/Fb/gi, 'E')
+             .replace(/Gb/gi, 'F#')
+             .replace(/Ab/gi, 'G#')
+             .replace(/Bb/gi, 'A#');
 }
+function normalizeRoot(root) {
+  if (!root) return root;
+  root = String(root).trim();
+  // garantizar primer carácter mayúscula y resto tal como # o b
+  const m = root.match(/^([A-G])([#b])?/i);
+  if (!m) return root;
+  const base = m[1].toUpperCase() + (m[2] ? m[2] : '');
+  // si es bemol, devolver equivalente en sostenido para indexOf
+  if (base.includes('b')) return flatToSharp(base);
+  return base;
+}
+
+// ---------- Transpose robusto ----------
+function transpose(lyrics, fromTone, toTone, includeIntro = false) {
+  const allTones = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
+  const indexOf = note => allTones.indexOf(note);
+
+  const fromRootRaw = getChordBase(fromTone);
+  const toRootRaw = getChordBase(toTone);
+  const fromRoot = normalizeRoot(fromRootRaw);
+  const toRoot = normalizeRoot(toRootRaw);
+  const fromIdx = indexOf(fromRoot);
+  const toIdx = indexOf(toRoot);
+  if (fromIdx === -1 || toIdx === -1) return lyrics;
+
+  const semitones = (toIdx - fromIdx + 12) % 12;
+
+  const chordRegex = /([A-G](?:#|b)?)([^ \n\/]*)(?:\/([A-G](?:#|b)?))?/g;
+
+  return lyrics.map(line => {
+    // Si includeIntro es false y línea empieza con "Intro:", la dejamos igual
+    if (!includeIntro && line.startsWith("Intro:")) return line;
+
+return line.replace(chordRegex, (match, root, suffix = '', bass, bassSuffix = '') => {
+    const rootNorm = normalizeRoot(root);
+    const rootIdx = allTones.indexOf(rootNorm);
+    if (rootIdx === -1) return match;
+    const newRoot = allTones[(rootIdx + semitones + 12) % 12];
+    let result = newRoot + suffix;
+
+    if (bass) {
+        const bassNorm = normalizeRoot(bass);
+        const bassIdx = allTones.indexOf(bassNorm);
+        if (bassIdx !== -1) {
+            const newBass = allTones[(bassIdx + semitones + 12) % 12];
+            result += '/' + newBass + bassSuffix;
+        } else {
+            result += '/' + bass + bassSuffix;
+        }
+    }
+    return result;
+});
+  });
+}
+
+
 function renderLyrics(lyrics) {
   const pre = document.getElementById("songLyrics");
   pre.innerHTML = lyrics
     .map(line =>
-      line.replace(/([A-G][#b]?m?)/g,
-        '<span class="chord" onclick="showChordPreview(\'$1\')">$1</span>'
-      )
+      line.replace(/([A-G][#b]?[^ \n]*)/g,
+  '<span class="chord" onclick="showChordPreview(\'$1\')">$1</span>'
+)
     ).join("\n");
 }
 
@@ -601,12 +681,28 @@ window.showChordPreview = function (chord) {
 };
 
 function transposeHalf(d) {
-  const currentIdx = scale.indexOf(currentTone);
-  const newIdx = (currentIdx + d + scale.length) % scale.length;
-  const newTone = scale[newIdx];
+  const cur = currentTone || originalTone || "C";
+  const rootMatch = String(cur).match(/^([A-G](?:#|b)?)/i);
+  const root = rootMatch ? rootMatch[0] : cur;
+  const normalized = normalizeRoot(root);
+  const allTones = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
+  const idx = allTones.indexOf(normalized);
+  if (idx === -1) return;
+  const newRoot = allTones[(idx + d + 12) % 12];
+
+  const isMinor = /(^|[^A-Za-z0-9])m($|[^A-Za-z0-9])/.test(cur) || /m$/.test(cur);
+  const newTone = isMinor ? (newRoot + 'm') : newRoot;
+
   document.getElementById("toneSelect").value = newTone;
   document.getElementById("toneValue").innerText = newTone;
-  renderLyrics(transpose(currentSong.chords, originalTone, newTone));
+
+  // PASAMOS includeIntro = true
+  const lyricsWithIntro = [
+    ...(currentSong.intro ? [`Intro: ${currentSong.intro}\n`] : []),
+    ...currentSong.chords
+  ];
+
+  renderLyrics(transpose(lyricsWithIntro, currentTone || originalTone, newTone, true));
   currentTone = newTone;
 }
 
@@ -617,11 +713,22 @@ function transposeTone(d) {
 function resetTone() {
   document.getElementById("toneSelect").value = originalTone;
   document.getElementById("toneValue").innerText = originalTone;
-  renderLyrics(currentSong.chords);
+
+  // Renderizar intro + chords exactamente como están en la canción original
+  const lyricsWithIntro = [
+    ...(currentSong.intro ? [`Intro: ${currentSong.intro}\n`] : []),
+    ...currentSong.chords
+  ];
+
+  renderLyrics(lyricsWithIntro);
+
+  // Actualizar el tono actual
   currentTone = originalTone;
 }
 
+
 loadSong();
+
 
 </script>
 </body>

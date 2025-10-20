@@ -27,7 +27,33 @@ main{max-width:800px;margin:1rem auto;padding:1rem;background:#fff;border-radius
 .tone-menu.show{display:flex;opacity:1;transform:translateX(-50%) scale(1);}
 .tone-menu button{background:white;border:none;border-bottom:1px solid #eee;padding:8px 16px;font-weight:600;color:#333;cursor:pointer;font-size:0.8rem;}
 .tone-menu button:hover{background:#0077b6;color:white;}
-.controls{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-bottom:15px;}
+.controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr; /* tres columnas iguales */
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  max-width: 600px;
+  margin: 10px auto;
+}
+
+#toneSelect,
+.control-btn {
+  width: 100%;
+  height: 40px;
+  border-radius: 8px;
+  font-family: 'Poppins', sans-serif;
+  font-size: clamp(10px, 2.5vw, 14px); /* se ajusta según el espacio */
+  white-space: nowrap; /* evita que el texto se divida */
+  overflow: hidden; /* oculta exceso */
+  text-overflow: ellipsis; /* agrega "..." si se pasa */
+  text-align: center;
+  cursor: pointer;
+  padding: 0 5px;
+  box-sizing: border-box;
+}
+
+
 .controls button, .controls select{background:#fff;border:2px solid #0077b6;color:#222;padding:7px 10px;border-radius:8px;font-weight:600;cursor:pointer;font-size:0.8rem;transition:all 0.25s ease-in-out;}
 .controls button:hover, .controls select:hover{background:#0077b6;color:#fff;transform:translateY(-1px);}
 .tone-original{background:#fff3cd;border:2px solid #ffb703;color:#7a5a00;}
@@ -54,33 +80,36 @@ main{max-width:800px;margin:1rem auto;padding:1rem;background:#fff;border-radius
   background:#005f8b;
 }
 
-/* Contenido canción grande, responsive y legible */
 #songLyrics {
-  font-family: 'Courier New', Courier, monospace;
-  font-weight: 600;
-  font-size: clamp(0.8rem, 1vw + 0.4rem, 1rem);
+  font-family: 'Oxygen Mono','lucida console','courier new','courier', monospace;
+  font-size: 13px;
+  line-height: 1.35;
+  font-weight: 400;
   white-space: pre;
   overflow-x: auto;
-  line-height: 1.4;
-  background: #fff;
-  border-radius: 10px;
-  padding: 15px;
+  /* background: #fff;       << QUITA O COMENTA ESTA LÍNEA */
+  /* border-radius: 10px;    << QUITA O COMENTA ESTA LÍNEA */
+  padding: 14px 10px;
   color: #222;
-  border: 1px solid #ddd;
+  /* border: 1px solid #ddd; << QUITA O COMENTA ESTA LÍNEA */
   text-align: left;
   box-sizing: border-box;
-  max-width: 96vw; /* Ocupa hasta el 96% del ancho de la ventana */
-  min-width: 320px; /* Usa mínimo ancho para celulares pequeños */
-  margin: 0 auto; /* Centrado horizontal */
+  width: 100%;
+  max-width: 99vw;
+  min-width: 220px;
+  margin: 0 auto;
+  overflow-x: auto;
+  overflow-y: auto;
 }
 
 .chord {
   font-weight: 700;
   color: #0077b6;
-  cursor: pointer;
   font-family: inherit;
   font-size: inherit;
   white-space: nowrap;
+  letter-spacing: 0.01em;
+  cursor: pointer;
 }
 .chord:hover {
   color: #ffb703;
@@ -131,16 +160,37 @@ main{max-width:800px;margin:1rem auto;padding:1rem;background:#fff;border-radius
         <button onclick="resetTone()">🎵 Tono original</button>
       </div>
     </div>
-    <div class="controls">
-      <select id="toneSelect"></select>
-      <button class="tone-original" onclick="resetTone()">🎵 Tono original</button>
-    </div>
+    <div class="controls" style="display:flex; align-items: center; gap: 10px;">
+  <select id="toneSelect" class="control-btn"></select>
+  <button class="control-btn tone-original" id="btnOriginalTone">🎵 Tono original</button>
+  <button class="control-btn" id="autoScrollToggleBtn">▶ Desplazar</button>
+</div>
     <pre id="songLyrics"></pre>
     <div class="navigation-buttons">
       <button id="songBackBtn">← Anterior</button>
       <button id="nextSongBtn">Siguiente →</button>
     </div>
   </section>
+
+  <!-- Barra de control scroll fija abajo -->
+  <div id="scrollControlBar" style="
+    position: fixed;
+    bottom: 0;
+    left: 0; right: 0;
+    background: #f9fbfd;
+    border-top: 2px solid #0077b6;
+    padding: 12px 20px;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 -4px 12px rgb(0 119 182 / 0.2);
+    z-index: 9999;
+  ">
+    <label for="scrollSpeed" style="font-weight: 600; color: #0077b6;">Velocidad:</label>
+    <input type="range" id="scrollSpeed" min="1" max="10" value="1" step="1" style="width: 90%;">
+    <button id="stopScrollBtn" style="width: 90%; background:#dc3545; color:#fff; border:none; padding: 10px 0; border-radius: 8px; cursor:pointer; font-weight: 700;">⏹️ Detener</button>
+  </div>
 </main>
 <div class="modal" id="moveModal">
   <div class="modal-content">
@@ -172,7 +222,10 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-const scale = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+const scale = [
+  "C", "C#", "D", "D#","E", "F", "F#", "G", "G#", "A", "A#", "B",
+  "Cm", "C#m", "Dm", "D#m", "Em", "Fm", "F#m", "Gm", "G#m", "Am", "A#m", "Bm"
+];
 
 const albumTitleEl = document.getElementById('albumTitle');
 const backBtn = document.getElementById('backBtn');
@@ -572,15 +625,15 @@ function getFolderPath() {
 
 // Mejor regexp para acordes, evita detección en palabras con vocal
 function renderLyrics(lyrics) {
-  songLyricsEl.innerHTML = lyrics.map(line => line.replace(/\b([A-G][#b]?(?:m|maj7|sus2|sus4|add9|dim|aug|7)?)\b/g, match => {
-    // Solo acordes válidos, evita palabras normales
-    const vowels = ['A','E','I','O','U'];
-    if (!vowels.includes(match.charAt(0)) || match.length > 1) {
-      return `<span class="chord" onclick="showChordPreview('${match}')">${match}</span>`;
-    }
-    return match;
-  })).join('\n');
+  const chordRegex = /(?<![a-zA-Z0-9])([A-G](?:#|b)?(?:m|maj|min|dim|aug|sus2|sus4|add9|add11|m7|7|9|11|13|m9|m11|m13|maj7|maj9|maj13)?(?:\/[A-G](?:#|b)?)?)(?![a-zA-Z0-9])/g;
+
+  songLyricsEl.innerHTML = lyrics.map(line => 
+    line.replace(chordRegex, match => 
+      `<span class="chord" onclick="showChordPreview('${match}')">${match}</span>`
+    )
+  ).join('\n');
 }
+
 
 window.showChordPreview = chord => {
   chordPreview.innerText = `🎸 ${chord}`;
@@ -601,14 +654,32 @@ function openSong(song, songArray) {
   songTitleEl.textContent = songInfo.title || song.title;
   toneValueEl.textContent = currentTone;
 
-  toneSelect.innerHTML = '';
-  scale.forEach(t => {
-    const opt = document.createElement('option');
-    opt.value = t;
-    opt.textContent = t;
-    if (t === currentTone) opt.selected = true;
-    toneSelect.appendChild(opt);
-  });
+toneSelect.innerHTML = '';
+scale.forEach(t => {
+  const opt = document.createElement('option');
+  opt.value = t;
+  opt.textContent = t;
+
+  // equivalencias (para D# == Eb, A# == Bb, etc.)
+  const enharmonic = {
+    "D#": "Eb", "Eb": "D#",
+    "A#": "Bb", "Bb": "A#",
+    "G#": "Ab", "Ab": "G#",
+    "C#": "Db", "Db": "C#",
+    "F#": "Gb", "Gb": "F#",
+    "D#m": "Ebm", "Ebm": "D#m",
+    "A#m": "Bbm", "Bbm": "A#m",
+    "G#m": "Abm", "Abm": "G#m",
+    "C#m": "Dbm", "Dbm": "C#m",
+    "F#m": "Gbm", "Gbm": "F#m"
+  };
+
+  if (t === currentTone || enharmonic[t] === currentTone) {
+    opt.selected = true;
+  }
+
+  toneSelect.appendChild(opt);
+});
 
   renderLyrics(transpose(songInfo.chords, originalTone, currentTone));
 
@@ -630,11 +701,22 @@ function transpose(lyrics, from, to) {
   return lyrics.map(l => l.replace(/([A-G][#b]?(?:m|maj7|sus2|sus4|add9|dim|aug|7)?)/g, c => transposeChord(c, semitones)));
 }
 function transposeChord(chord, semitones) {
-  let base = chord.match(/[A-G][#b]?/);
-  if (!base) return chord;
-  let idx = (scale.indexOf(base[0]) + semitones + 12) % scale.length;
-  return chord.replace(base[0], scale[idx]);
+  const notes = ["C", "C#", "D", "Eb", "E", "F", "F#", "G", "Ab", "A", "Bb", "B"];
+  const noteMap = {
+    "Db": "C#", "D#": "Eb", "Gb": "F#", "G#": "Ab", "A#": "Bb",
+    "Cb": "B", "Fb": "E", "E#": "F", "B#": "C"
+  };
+
+  return chord.replace(/([A-G](?:#|b)?)(.*)/, (match, root, suffix) => {
+    root = noteMap[root] || root;
+    const index = notes.indexOf(root);
+    if (index === -1) return match;
+
+    let newIndex = (index + semitones + 12) % 12;
+    return notes[newIndex] + suffix;
+  });
 }
+
 function transposeHalf(d) {
   const idx = (scale.indexOf(currentTone) + d + 12) % 12;
   currentTone = scale[idx];
@@ -810,6 +892,115 @@ onAuthStateChanged(auth, user => {
     window.location.href = 'login.html';
   }
 });
+
+const autoScrollToggleBtn = document.getElementById('autoScrollToggleBtn');
+const scrollControlBar = document.getElementById('scrollControlBar');
+const scrollSpeedInput = document.getElementById('scrollSpeed');
+const stopScrollBtn = document.getElementById('stopScrollBtn');
+
+let scrollInterval = null;
+let isPaused = false;
+
+autoScrollToggleBtn.addEventListener('click', () => {
+  if (scrollControlBar.style.display === 'flex') {
+    stopScrolling();
+    scrollControlBar.style.display = 'none';
+    autoScrollToggleBtn.textContent = '▶ Desplazar';
+  } else {
+    scrollControlBar.style.display = 'flex';
+    autoScrollToggleBtn.textContent = '⏸ Pausar';
+    startScrolling();
+  }
+});
+
+stopScrollBtn.addEventListener('click', () => {
+  stopScrolling();
+  scrollControlBar.style.display = 'none';
+  autoScrollToggleBtn.textContent = '▶ Desplazar';
+});
+
+scrollSpeedInput.addEventListener('input', () => {
+  if (scrollInterval) {
+    stopScrolling();
+    startScrolling();
+  }
+});
+
+function startScrolling() {
+  if (scrollInterval) return;
+
+  const speedValue = Number(scrollSpeedInput.value);
+  let speed;
+  switch (speedValue) {
+    case 1:
+      speed = 0.5;
+      break;
+    case 2:
+      speed = 1;
+      break;
+    case 3:
+      speed = 2;
+      break;
+    case 4:
+      speed = 3;
+      break;
+    case 5:
+      speed = 4;
+      break;
+    default:
+      speed = 5;
+  }
+
+  let scrollDuration = 2000; // 🔹 Baja durante 2 segundos
+  let pauseDuration = 4000;  // 🔹 Pausa 1 segundo
+
+  function scrollCycle() {
+    if (isPaused) return;
+
+    let elapsed = 0;
+    scrollInterval = setInterval(() => {
+      window.scrollBy(0, speed);
+      elapsed += 30;
+
+      // Cuando pasa el tiempo de desplazamiento -> pausa
+      if (elapsed >= scrollDuration) {
+        clearInterval(scrollInterval);
+        scrollInterval = null;
+
+        // Pausa de 1 segundo
+        setTimeout(() => {
+          if ((window.innerHeight + window.scrollY) < document.body.offsetHeight && !isPaused) {
+            scrollCycle(); // Reinicia el ciclo
+          } else {
+            stopScrolling();
+            scrollControlBar.style.display = 'none';
+            autoScrollToggleBtn.textContent = '▶ Desplazar';
+          }
+        }, pauseDuration);
+      }
+
+      // Si llega al final de la página
+      if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+        stopScrolling();
+        scrollControlBar.style.display = 'none';
+        autoScrollToggleBtn.textContent = '▶ Desplazar';
+      }
+    }, 30);
+  }
+
+  scrollCycle();
+}
+
+function stopScrolling() {
+  isPaused = true;
+  if (scrollInterval) {
+    clearInterval(scrollInterval);
+    scrollInterval = null;
+  }
+  setTimeout(() => (isPaused = false), 300); // Evita reinicio inmediato
+}
+
+
 </script>
 </body>
 </html>

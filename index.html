@@ -395,7 +395,7 @@ function searchSongs() {
   }
   const found = songs.filter(s => normalize(s.title).includes(q));
   if (!found.length) {
-    results.innerHTML = "<p style='text-align:center;color:#777'>😔 No hay coincidencias</p>";
+    results.innerHTML = "<p style='text-align:center;color:#777'>No hay coincidencias</p>";
   } else {
     found.forEach(s => {
       const div = document.createElement("div");
