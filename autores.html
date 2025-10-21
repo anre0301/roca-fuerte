@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Canciones del Autor</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(180deg, #f5f7fa, #c3cfe2);
+      margin: 0;
+      color: #333;
+      transition: 0.3s;
+    }
+
+    header {
+      background: linear-gradient(135deg, #0077b6, #00b4d8);
+      padding: 15px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      color: white;
+    }
+
+    header h1 {
+      font-size: 1.3rem;
+      margin: 0;
+    }
+
+    #backBtn {
+      background: rgba(255,255,255,0.2);
+      border: none;
+      color: white;
+      border-radius: 50%;
+      width: 38px;
+      height: 38px;
+      cursor: pointer;
+      font-size: 1.2rem;
+      transition: 0.3s;
+    }
+    #backBtn:hover {
+      background: rgba(255,255,255,0.35);
+      transform: scale(1.1);
+    }
+
+    .author-info {
+      text-align: center;
+      margin: 30px 15px 10px;
+    }
+    .author-info h2 {
+      color: #0077b6;
+      margin-bottom: 5px;
+    }
+    .author-info p {
+      color: #555;
+      font-size: 0.95rem;
+    }
+
+    .search-container {
+      max-width: 700px;
+      margin: 25px auto 10px;
+      display: flex;
+      align-items: center;
+      background: #fff;
+      border-radius: 50px;
+      padding: 10px 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    }
+    .search-container input {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-size: 1rem;
+      padding: 10px;
+      border-radius: 50px;
+    }
+    .search-container button {
+      background: #0077b6;
+      border: none;
+      color: white;
+      border-radius: 50%;
+      width: 42px;
+      height: 42px;
+      cursor: pointer;
+      transition: 0.3s;
+      font-size: 1.1rem;
+    }
+    .search-container button:hover { background: #005f8e; }
+
+    .song-list {
+      max-width: 750px;
+      margin: 20px auto 40px;
+      padding: 0 15px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 15px;
+    }
+
+    .song-card {
+      background: #fff;
+      border-radius: 15px;
+      padding: 18px 20px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+      cursor: pointer;
+      transition: 0.25s ease;
+    }
+    .song-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+      background: #f8fcff;
+    }
+
+    .song-title {
+      color: #0077b6;
+      font-weight: 600;
+      font-size: 1.05rem;
+    }
+    .song-tone {
+      color: #555;
+      font-size: 0.9rem;
+      margin-top: 4px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 15px;
+      color: #777;
+      font-size: 0.85rem;
+    }
+
+    @media (max-width: 600px) {
+      header h1 { font-size: 1.1rem; }
+      .song-card { padding: 15px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <button id="backBtn" title="Volver">←</button>
+  <h1 id="pageTitle">Canciones del Autor</h1>
+  <div style="width:38px;"></div>
+</header>
+
+<section class="author-info" id="authorInfo">
+  <h2>Cargando...</h2>
+  <p>Por favor espera un momento.</p>
+</section>
+
+<div class="search-container">
+  <input type="text" id="searchInput" placeholder="Buscar canción del autor...">
+  <button id="searchBtn">🔍</button>
+</div>
+
+<section class="song-list" id="songList"></section>
+
+<footer>© 2025 - Ministerio Roca Fuerte 🎶</footer>
+
+<script>
+let authorSongs = [];
+
+async function loadAuthorSongs() {
+  const params = new URLSearchParams(window.location.search);
+  const author = params.get("autor");
+  const authorInfo = document.getElementById("authorInfo");
+  const songList = document.getElementById("songList");
+  const pageTitle = document.getElementById("pageTitle");
+
+  if (!author) {
+    authorInfo.innerHTML = "<h2>Error</h2><p>No se especificó ningún autor.</p>";
+    return;
+  }
+
+  try {
+    const res = await fetch("songs.json");
+    const songs = await res.json();
+
+    authorSongs = songs.filter(s => s.autor && s.autor.toLowerCase() === author.toLowerCase());
+
+    if (!authorSongs.length) {
+      authorInfo.innerHTML = `<h2>${author}</h2><p>No se encontraron canciones registradas.</p>`;
+      return;
+    }
+
+    pageTitle.textContent = author;
+    authorInfo.innerHTML = `
+      <h2>${author}</h2>
+      <p>${authorSongs.length} canciones encontradas</p>
+    `;
+
+    displaySongs(authorSongs);
+  } catch (err) {
+    authorInfo.innerHTML = `<h2>Error</h2><p>No se pudo cargar la información del autor.</p>`;
+    console.error(err);
+  }
+}
+
+function displaySongs(list) {
+  const songList = document.getElementById("songList");
+  songList.innerHTML = "";
+  list.forEach(s => {
+    const div = document.createElement("div");
+    div.className = "song-card";
+    div.innerHTML = `
+      <div class="song-title">${s.title}</div>
+      <div class="song-tone">Tono: ${s.tone || "N/A"}</div>
+    `;
+    div.addEventListener("click", () => {
+      window.location.href = `song.html?id=${s.id}`;
+    });
+    songList.appendChild(div);
+  });
+}
+
+// 🔍 Buscar dentro del autor
+document.getElementById("searchBtn").addEventListener("click", filterSongs);
+document.getElementById("searchInput").addEventListener("input", filterSongs);
+
+function filterSongs() {
+  const q = document.getElementById("searchInput").value.toLowerCase().trim();
+  if (!q) {
+    displaySongs(authorSongs);
+    return;
+  }
+  const filtered = authorSongs.filter(s =>
+    s.title.toLowerCase().includes(q) ||
+    (s.tone && s.tone.toLowerCase().includes(q))
+  );
+  displaySongs(filtered);
+}
+
+document.getElementById("backBtn").addEventListener("click", () => {
+  window.history.back();
+});
+
+loadAuthorSongs();
+</script>
+
+</body>
+</html>

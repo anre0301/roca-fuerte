@@ -216,7 +216,6 @@
   </style>
 </head>
 <body>
-
 <header>
   <h1>🎵 Min. Roca Fuerte</h1>
   <div class="profile" id="profileIcon">👤</div>
@@ -303,7 +302,21 @@ logoutBtn.addEventListener("click", async () => {
   localStorage.removeItem("user");
   window.location.href = "login.html";
 });
-showEmail.addEventListener("click", () => alert("Estás conectado como:\n" + currentUserEmail));
+showEmail.addEventListener("click", () => {
+  // Guardar temporalmente los datos del usuario para el perfil
+  const userData = {
+    email: currentUserEmail,
+    uid: currentUserId,
+    nombre: currentUserData.nombre || "Usuario sin nombre",
+    rol: currentUserData.rol || "Free",
+    creditos: currentUserData.creditos || 0,
+    plan: currentUserData.plan || "BÁSICO"
+  };
+  localStorage.setItem("perfilUsuario", JSON.stringify(userData));
+
+  // Ir a la página del perfil
+  window.location.href = "perfil.html";
+});
 
 async function loadUserAlbums(uid) {
   const ref = doc(db, "users", uid);
@@ -383,34 +396,65 @@ function normalize(s) {
   return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }
 
+// 🔍 NUEVA FUNCIÓN DE BÚSQUEDA (TÍTULOS + AUTORES)
 function searchSongs() {
   const q = normalize(document.getElementById("searchInput").value);
   const results = document.getElementById("results");
   results.innerHTML = "";
+
   if (!q) {
     results.classList.remove("active");
     results.style.display = "none";
     albumsDiv.style.display = "grid";
     return;
   }
-  const found = songs.filter(s => normalize(s.title).includes(q));
-  if (!found.length) {
+
+  const foundSongs = songs.filter(s => normalize(s.title).includes(q));
+  const authorsMap = {};
+
+  // Contar cuántas canciones tiene cada autor
+  songs.forEach(s => {
+    if (!s.autor) return;
+    const authorNorm = normalize(s.autor);
+    if (authorNorm.includes(q)) {
+      authorsMap[s.autor] = (authorsMap[s.autor] || 0) + 1;
+    }
+  });
+
+  if (!foundSongs.length && Object.keys(authorsMap).length === 0) {
     results.innerHTML = "<p style='text-align:center;color:#777'>No hay coincidencias</p>";
-  } else {
-    found.forEach(s => {
-      const div = document.createElement("div");
-      div.className = "song-card";
-      div.innerHTML = `
-        <div class='song-title'>${s.title}</div>
-        <div class='song-tone'>Tono: ${s.tone}</div>
-        <div class='song-author'>Autor: ${s.autor || 'Desconocido'}</div>
-      `;
-      div.addEventListener("click", () => {
-        window.location.href = `song.html?id=${s.id}`;
-      });
-      results.appendChild(div);
-    });
   }
+
+  // Mostrar resultados de canciones
+  foundSongs.forEach(s => {
+    const div = document.createElement("div");
+    div.className = "song-card";
+    div.innerHTML = `
+      <div class='song-title'>${s.title}</div>
+      <div class='song-tone'>Tono: ${s.tone}</div>
+      <div class='song-author'>Autor: ${s.autor || 'Desconocido'}</div>
+    `;
+    div.addEventListener("click", () => {
+      window.location.href = `song.html?id=${s.id}`;
+    });
+    results.appendChild(div);
+  });
+
+  // Mostrar resultados de autores
+  Object.entries(authorsMap).forEach(([author, count]) => {
+    const div = document.createElement("div");
+    div.className = "song-card";
+    div.style.background = "#e8f7ff";
+    div.innerHTML = `
+      <div class='song-title'>👤 ${author}</div>
+      <div class='song-tone'>${count} canciones disponibles</div>
+    `;
+    div.addEventListener("click", () => {
+      window.location.href = `autores.html?autor=${encodeURIComponent(author)}`;
+    });
+    results.appendChild(div);
+  });
+
   albumsDiv.style.display = "none";
   results.style.display = "block";
   results.classList.add("active");

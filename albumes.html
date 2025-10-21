@@ -7,6 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Oxygen+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
 <style>
+/* ---------- CSS (tus estilos, conservados y ordenados) ---------- */
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Poppins',sans-serif;background:#f0f2f5;color:#333;}
 header{background:#0077b6;color:white;padding:1rem;display:flex;align-items:center;justify-content:space-between;}
@@ -28,102 +29,17 @@ main{max-width:800px;margin:1rem auto;padding:1rem;background:#fff;border-radius
 .tone-menu.show{display:flex;opacity:1;transform:translateX(-50%) scale(1);}
 .tone-menu button{background:white;border:none;border-bottom:1px solid #eee;padding:8px 16px;font-weight:600;color:#333;cursor:pointer;font-size:0.8rem;}
 .tone-menu button:hover{background:#0077b6;color:white;}
-.controls {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr; /* tres columnas iguales */
-  align-items: center;
-  gap: 10px;
-  width: 100%;
-  max-width: 600px;
-  margin: 10px auto;
-}
-
-#toneSelect,
-.control-btn {
-  width: 100%;
-  height: 40px;
-  border-radius: 8px;
-  font-family: 'Poppins', sans-serif;
-  font-size: clamp(10px, 2.5vw, 14px); /* se ajusta según el espacio */
-  white-space: nowrap; /* evita que el texto se divida */
-  overflow: hidden; /* oculta exceso */
-  text-overflow: ellipsis; /* agrega "..." si se pasa */
-  text-align: center;
-  cursor: pointer;
-  padding: 0 5px;
-  box-sizing: border-box;
-}
-
-
+.controls { display: grid; grid-template-columns: 1fr 1fr 1fr; align-items:center; gap:10px; width:100%; max-width:600px; margin:10px auto; }
+#toneSelect, .control-btn { width:100%; height:40px; border-radius:8px; font-family:'Poppins'; font-size:clamp(10px,2.5vw,14px); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-align:center; cursor:pointer; padding:0 5px; box-sizing:border-box; }
 .controls button, .controls select{background:#fff;border:2px solid #0077b6;color:#222;padding:7px 10px;border-radius:8px;font-weight:600;cursor:pointer;font-size:0.8rem;transition:all 0.25s ease-in-out;}
 .controls button:hover, .controls select:hover{background:#0077b6;color:#fff;transform:translateY(-1px);}
 .tone-original{background:#fff3cd;border:2px solid #ffb703;color:#7a5a00;}
-.back-btn { /* Ocultamos el back-btn que estaba en top para no duplicar */
-  display:none;
-}
-.navigation-buttons {
-  margin-top: 15px;
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-}
-.navigation-buttons button {
-  background:#0077b6;
-  border:none;
-  color:white;
-  padding:10px 18px;
-  border-radius: 8px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-.navigation-buttons button:hover {
-  background:#005f8b;
-}
-
-#songLyrics {
-  font-family: 'Oxygen Mono', 'Lucida Console', 'Courier New', 'Courier', monospace !important;
-  font-size: clamp(12px, 2vw, 16px);
-  line-height: 1.35;
-  font-weight: 700 !important;
-  white-space: pre-wrap;
-  overflow-wrap: break-word;
-  color: #222;
-  text-align: left;
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
-
-  /* suavizado de fuente */
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
-
-  /* sin marco */
-  background: none;
-  border: none;
-  padding: 0;
-
-  /* bajarlo un poco */
-  margin-top: 60px;  /* ajusta el valor a tu gusto */
-}
-
-.chord {
-  font-weight: 700 !important;
-  color: #0077b6;
-  font-family: inherit;
-  font-size: inherit;
-  white-space: normal;  
-  display: inline;
-  cursor: pointer;
-  letter-spacing: 0.01em;
-}
-
-.chord:hover {
-  color: #ffb703;
-}
-
-
+.navigation-buttons { margin-top:15px; width:100%; display:flex; justify-content:space-between; }
+.navigation-buttons button { background:#0077b6; border:none; color:white; padding:10px 18px; border-radius:8px; font-size:1rem; cursor:pointer; transition:background .3s ease; }
+.navigation-buttons button:hover { background:#005f8b; }
+#songLyrics { font-family:'Oxygen Mono', monospace !important; font-size:clamp(12px,2vw,16px); line-height:1.35; font-weight:700 !important; white-space:pre-wrap; overflow-wrap:break-word; color:#222; text-align:left; width:100%; max-width:100%; min-width:0; background:none; border:none; padding:0; margin-top:60px; }
+.chord { font-weight:700 !important; color:#0077b6; font-family:inherit; font-size:inherit; white-space:normal; display:inline; cursor:pointer; letter-spacing:0.01em; }
+.chord:hover { color:#ffb703; }
 .modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background: rgba(0,0,0,0.5);justify-content:center;align-items:center;z-index:100;}
 .modal-content{background:white;border-radius:12px;padding:20px;width:85%;max-width:400px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.2);}
 .modal-content select{width:100%;margin-bottom:12px;padding:7px;}
@@ -131,34 +47,58 @@ main{max-width:800px;margin:1rem auto;padding:1rem;background:#fff;border-radius
 .chord-preview{position:fixed;bottom:18px;right:18px;background:#fff;border:2px solid #0077b6;border-radius:10px;padding:7px 14px;color:#222;font-weight:600;font-size:0.85rem;display:none;box-shadow:0 3px 10px rgba(0,0,0,0.15);}
 .floating-add{position:fixed;bottom:20px;right:20px;background:#0077b6;color:white;padding:12px 18px;border-radius:50%;font-size:1.2rem;cursor:pointer;box-shadow:0 3px 15px rgba(0,0,0,0.2);}
 #homeBtn{background:none;cursor:pointer;font-size:1.5rem;color:white;margin-left:0.5rem;}
-#albumSongsList .list-item,
-#songsList .list-item {
-  font-size: 0.rem;
+.swal2-popup-custom { font-family: 'Poppins', sans-serif; font-size:1rem; border-radius:15px !important; color:#212529; }
+.back-song-btn {
+  position: absolute;
+  top: 12px;     /* un poco más arriba */
+  left: 8px;     /* más a la izquierda */
+  width: 38px;
+  height: 38px;
+  border: none;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #2196f3, #1565c0);
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+  transition: all 0.25s ease;
+  z-index: 20;
 }
-.swal2-popup-custom {
-  font-family: 'Poppins', sans-serif;
-  font-size: 1rem;
-  border-radius: 15px !important;
-  color: #212529;
-}
-</style>
 
+.back-song-btn::before {
+  content: "←";
+}
+
+.back-song-btn:hover {
+  transform: scale(1.12);
+  background: linear-gradient(145deg, #42a5f5, #1e88e5);
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.35);
+}
+
+/* ---------- fin CSS ---------- */
 </style>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
 <header>
-  <button id="backBtn">←</button>
+  <button id="backBtn" title="Atrás">←</button>
   <button id="homeBtn" title="Volver al inicio">🏠</button>
   <h1 id="albumTitle">Cargando álbum...</h1>
 </header>
+
 <main>
   <section id="foldersList"></section>
   <section id="albumSongsList"></section>
   <section id="songsList" style="display:none;"></section>
-  <section id="songContent" class="song-container">
-    <!-- Eliminado back-btn que estaba fijo arriba -->
+
+  <section id="songContent" class="song-container" aria-hidden="true">
+    <button id="closeSongBtn" class="back-song-btn" style="display:none;"></button>
     <h2 id="songTitle"></h2>
+
     <div class="tone" id="tone">
       🎵 Tono actual: <span id="toneValue"></span>
       <div class="tone-menu" id="toneMenu">
@@ -169,38 +109,29 @@ main{max-width:800px;margin:1rem auto;padding:1rem;background:#fff;border-radius
         <button onclick="resetTone()">🎵 Tono original</button>
       </div>
     </div>
-    <div class="controls" style="display:flex; align-items: center; gap: 10px;">
-  <select id="toneSelect" class="control-btn"></select>
-  <button class="control-btn tone-original" id="btnOriginalTone">🎵 Tono original</button>
-  <button class="control-btn" id="autoScrollToggleBtn">▶ Desplazar</button>
-</div>
+
+    <div class="controls" style="display:flex; align-items:center; gap:10px;">
+      <select id="toneSelect" class="control-btn"></select>
+      <button class="control-btn tone-original" id="btnOriginalTone">🎵 Tono original</button>
+      <button class="control-btn" id="autoScrollToggleBtn">▶ Desplazar</button>
+    </div>
+
     <pre id="songLyrics"></pre>
+
     <div class="navigation-buttons">
       <button id="songBackBtn">← Anterior</button>
       <button id="nextSongBtn">Siguiente →</button>
     </div>
   </section>
-
-  <!-- Barra de control scroll fija abajo -->
-  <div id="scrollControlBar" style="
-    position: fixed;
-    bottom: 0;
-    left: 0; right: 0;
-    background: #f9fbfd;
-    border-top: 2px solid #0077b6;
-    padding: 12px 20px;
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-    box-shadow: 0 -4px 12px rgb(0 119 182 / 0.2);
-    z-index: 9999;
-  ">
-    <label for="scrollSpeed" style="font-weight: 600; color: #0077b6;">Velocidad:</label>
-    <input type="range" id="scrollSpeed" min="1" max="10" value="1" step="1" style="width: 90%;">
-    <button id="stopScrollBtn" style="width: 90%; background:#dc3545; color:#fff; border:none; padding: 10px 0; border-radius: 8px; cursor:pointer; font-weight: 700;">⏹️ Detener</button>
-  </div>
 </main>
+
+<!-- control scroll -->
+<div id="scrollControlBar" style="position:fixed;bottom:0;left:0;right:0;background:#f9fbfd;border-top:2px solid #0077b6;padding:12px 20px;display:none;flex-direction:column;align-items:center;gap:12px;box-shadow:0 -4px 12px rgba(0,119,182,.2);z-index:9999;">
+  <label for="scrollSpeed" style="font-weight:600;color:#0077b6;">Velocidad:</label>
+  <input type="range" id="scrollSpeed" min="1" max="10" value="1" step="1" style="width:90%;">
+  <button id="stopScrollBtn" style="width:90%;background:#dc3545;color:#fff;border:none;padding:10px 0;border-radius:8px;cursor:pointer;font-weight:700;">⏹️ Detener</button>
+</div>
+
 <div class="modal" id="moveModal">
   <div class="modal-content">
     <h3>Mover a carpeta</h3>
@@ -211,13 +142,18 @@ main{max-width:800px;margin:1rem auto;padding:1rem;background:#fff;border-radius
     </div>
   </div>
 </div>
+
 <div class="chord-preview" id="chordPreview"></div>
 <div class="floating-add" id="createAlbumBtn" title="Crear carpeta">➕</div>
+
 <script type="module">
+/* ========== JS: funcional y completo ========== */
+/* IMPORT FIREBASE (modular) */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
+/* ----- CONFIG FIREBASE (usa tu config) ----- */
 const firebaseConfig = {
   apiKey: "AIzaSyBt48uLSA1IhO36jXTbdOh7o-O8zQ2VAQ4",
   authDomain: "roca-fuerte-79965.firebaseapp.com",
@@ -231,14 +167,16 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-const scale = [
-  "C", "C#", "D", "D#","E", "F", "F#", "G", "G#", "A", "A#", "B",
-  "Cm", "C#m", "Dm", "D#m", "Em", "Fm", "F#m", "Gm", "G#m", "Am", "A#m", "Bm"
-];
+/* ----- Datos y elementos ----- */
+const scale = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B",
+  "Cm","C#m","Dm","D#m","Em","Fm","F#m","Gm","G#m","Am","A#m","Bm"];
 
 const albumTitleEl = document.getElementById('albumTitle');
 const backBtn = document.getElementById('backBtn');
 const homeBtn = document.getElementById('homeBtn');
+homeBtn.addEventListener('click', () => {
+  window.location.href = 'index.html';
+});
 const foldersList = document.getElementById('foldersList');
 const albumSongsList = document.getElementById('albumSongsList');
 const songsList = document.getElementById('songsList');
@@ -255,39 +193,44 @@ const confirmMove = document.getElementById('confirmMove');
 const cancelMove = document.getElementById('cancelMove');
 const createAlbumBtn = document.getElementById('createAlbumBtn');
 const chordPreview = document.getElementById('chordPreview');
+const closeSongBtn = document.getElementById('closeSongBtn');
+
+const autoScrollToggleBtn = document.getElementById('autoScrollToggleBtn');
+const scrollControlBar = document.getElementById('scrollControlBar');
+const scrollSpeedInput = document.getElementById('scrollSpeed');
+const stopScrollBtn = document.getElementById('stopScrollBtn');
 
 let currentUser = null, userData = null, currentAlbum = null, currentFolder = null;
 let songsDB = [], currentSong = null, currentSongIndex = -1, currentSongList = [], originalTone = null, currentTone = null;
-let navigationStack = [];
+let navigationStack = []; // historial { type: 'album'|'folder'|'song', album?, folder?, song? }
 
-// Obtener parámetro URL
-function getQueryParam(param) {
-  return new URLSearchParams(window.location.search).get(param);
+/* ---------- utilidades ---------- */
+function showElement(el){ if(el) el.style.display='block'; }
+function hideElement(el){ if(el) el.style.display='none'; }
+
+/* ---------- cargar canciones locales (opcional) ---------- */
+/* Si tus letras/ acordes están en songs.json y quieres usarlas, descomenta la línea de abajo.
+   Si todo lo guardas en Firestore (userData.albums.songs con title/chords/lyrics/tone) no hace falta. */
+async function loadSongsJson(){
+  try {
+    const res = await fetch('songs.json');
+    if(res.ok) songsDB = await res.json();
+  } catch(e){ console.warn('No hay songs.json o fallo al cargarlo'); }
 }
 
-// Cargar base canciones
-async function loadSongsJson() {
-  const res = await fetch('songs.json');
-  songsDB = await res.json();
-}
-
-// Cargar usuario
-async function loadUserData(uid) {
+/* ---------- FIRESTORE: cargar datos de usuario ---------- */
+async function loadUserData(uid){
   const docSnap = await getDoc(doc(db, 'users', uid));
   return docSnap.exists() ? docSnap.data() : null;
 }
-
-// Guardar cambios
-async function updateUserData() {
-  if (currentUser) await updateDoc(doc(db, 'users', currentUser.uid), { albums: userData.albums });
+async function updateUserData(){
+  if(currentUser && userData) {
+    await updateDoc(doc(db, 'users', currentUser.uid), { albums: userData.albums });
+  }
 }
 
-function showElement(el) { el.style.display = 'block'; }
-function hideElement(el) { el.style.display = 'none'; }
-
-// Crear menú contextual para carpetas
-// Crear menú contextual para carpetas
-function createFolderMenu(folder, refreshCb) {
+/* ---------- menus contextuales para carpetas ---------- */
+function createFolderMenu(folder, refreshCb){
   const menu = document.createElement('div');
   menu.className = 'submenu';
   menu.style.flexDirection = 'column';
@@ -307,22 +250,16 @@ function createFolderMenu(folder, refreshCb) {
       inputAttributes: { autocapitalize: 'off' },
       customClass: { popup: 'swal2-popup-custom' }
     }).then(result => {
-      if (result.isConfirmed) {
+      if(result.isConfirmed){
         const newName = result.value.trim();
-        if (newName) {
+        if(newName){
           folder.name = newName;
-          updateUserData().then(() => refreshCb());
+          updateUserData().then(()=>refreshCb());
         } else {
-          Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'El nombre no puede estar vacío',
-            confirmButtonColor: '#0077b6'
-          });
+          Swal.fire({ icon:'error', title:'Error', text:'El nombre no puede estar vacío', confirmButtonColor:'#0077b6' });
         }
       }
-      const menu = renameBtn.parentElement;
-      if(menu) menu.style.display = 'none';
+      menu.style.display='none';
     });
   };
 
@@ -331,58 +268,57 @@ function createFolderMenu(folder, refreshCb) {
   deleteBtn.onclick = e => {
     e.stopPropagation();
     Swal.fire({
-      icon: 'warning',
-      title: '¿Eliminar carpeta?',
-      text: 'Esta acción no puede revertirse',
-      showCancelButton: true,
-      confirmButtonText: 'Sí, eliminar',
-      cancelButtonText: 'Cancelar'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        // Eliminar carpeta de su contenedor correspondiente
-        let idx;
-        if (navigationStack.length === 0) {
-          idx = currentAlbum.folders.indexOf(folder);
-          if (idx > -1) currentAlbum.folders.splice(idx, 1);
-        } else if (currentFolder && currentFolder.folders) {
-          idx = currentFolder.folders.indexOf(folder);
-          if (idx > -1) currentFolder.folders.splice(idx, 1);
+      icon:'warning',
+      title:'¿Eliminar carpeta?',
+      text:'Esta acción no puede revertirse',
+      showCancelButton:true,
+      confirmButtonText:'Sí, eliminar',
+      cancelButtonText:'Cancelar'
+    }).then(result=>{
+      if(result.isConfirmed){
+        // eliminar correcto según contenedor
+        const parentContext = navigationStack.length === 0 ? 'root' : (currentFolder ? 'folder' : 'root');
+        if(parentContext === 'root'){
+          const idx = currentAlbum.folders.indexOf(folder);
+          if(idx>-1) currentAlbum.folders.splice(idx,1);
+        } else if(currentFolder && currentFolder.folders){
+          const idx = currentFolder.folders.indexOf(folder);
+          if(idx>-1) currentFolder.folders.splice(idx,1);
         }
-        updateUserData().then(() => refreshCb());
+        updateUserData().then(()=>refreshCb());
       }
     });
-    menu.style.display = 'none';
+    menu.style.display='none';
   };
 
   menu.append(renameBtn, deleteBtn);
-  menu.style.display = 'none';
-
+  menu.style.display='none';
   return menu;
 }
 
-// Render álbum
-function renderAlbumView() {
+/* ---------- RENDER VIEWS ---------- */
+function renderAlbumView(){
   foldersList.innerHTML = '';
   albumSongsList.innerHTML = '';
   songsList.style.display = 'none';
-  songContent.style.display = 'none';
+  hideElement(songContent);
 
   backBtn.style.display = navigationStack.length > 0 ? 'inline-block' : 'none';
-  albumTitleEl.textContent = currentAlbum.name;
+  albumTitleEl.textContent = currentAlbum.name || 'Álbum';
 
   showElement(foldersList);
   showElement(albumSongsList);
 
-  // Mostrar + solo en raíz
   createAlbumBtn.style.display = currentFolder ? 'none' : 'block';
 
-  if (currentAlbum.folders && currentAlbum.folders.length > 0) {
-    currentAlbum.folders.forEach(folder => {
+  // carpetas raíz
+  if(currentAlbum.folders && currentAlbum.folders.length > 0){
+    currentAlbum.folders.forEach(folder=>{
       const div = document.createElement('div');
       div.className = 'list-item subfolder';
       div.innerHTML = `${folder.name} <span style="font-weight:600;color:#7a0000;">(Carpeta)</span>`;
       div.onclick = () => {
-        navigationStack.push({ type: 'album', album: currentAlbum });
+        navigationStack.push({ type:'album', album: currentAlbum });
         currentFolder = folder;
         renderFolderView(folder);
       };
@@ -391,15 +327,10 @@ function renderAlbumView() {
       menuBtn.className = 'menu-btn';
       menuBtn.textContent = '⋮';
 
-      const submenu = createFolderMenu(folder, () => renderAlbumView());
-
+      const submenu = createFolderMenu(folder, ()=>renderAlbumView());
       div.appendChild(menuBtn);
       div.appendChild(submenu);
-
-      menuBtn.onclick = e => {
-        e.stopPropagation();
-        submenu.style.display = submenu.style.display === 'flex' ? 'none' : 'flex';
-      };
+      menuBtn.onclick = e => { e.stopPropagation(); submenu.style.display = submenu.style.display === 'flex' ? 'none' : 'flex'; };
 
       foldersList.appendChild(div);
     });
@@ -407,220 +338,91 @@ function renderAlbumView() {
     foldersList.innerHTML = '<p style="text-align:center;color:#555;">No hay carpetas en este álbum</p>';
   }
 
-  if (currentAlbum.songs && currentAlbum.songs.length > 0) {
-    currentAlbum.songs.forEach((song, idx) => {
+  // canciones en raíz del álbum
+  if(currentAlbum.songs && currentAlbum.songs.length > 0){
+    currentAlbum.songs.forEach((song, idx)=>{
       const div = document.createElement('div');
       div.className = 'list-item';
       div.textContent = song.title + (song.tone ? ` (${song.tone})` : '');
 
       const menuBtn = document.createElement('button');
-      menuBtn.className = 'menu-btn';
-      menuBtn.textContent = '⋮';
+      menuBtn.className='menu-btn'; menuBtn.textContent='⋮';
 
-      const submenu = document.createElement('div');
-      submenu.className = 'submenu';
-      submenu.style.flexDirection = 'column';
+      const submenu = document.createElement('div'); submenu.className='submenu'; submenu.style.flexDirection='column';
 
-      const moveUp = document.createElement('button');
-      moveUp.textContent = 'Mover arriba';
-      moveUp.onclick = e => {
-        e.stopPropagation();
-        if (idx === 0) {
-          Swal.fire({ icon: 'info', title: '¡Atención!', text: 'La canción ya está en la primera posición.' });
-          submenu.style.display = 'none';
-          return;
-        }
-        [currentAlbum.songs[idx - 1], currentAlbum.songs[idx]] = [currentAlbum.songs[idx], currentAlbum.songs[idx - 1]];
-        updateUserData().then(() => renderAlbumView());
-        submenu.style.display = 'none';
-      };
-      submenu.appendChild(moveUp);
+      const moveUp = document.createElement('button'); moveUp.textContent='Mover arriba';
+      moveUp.onclick = e => { e.stopPropagation(); if(idx===0){ Swal.fire({icon:'info', title:'¡Atención!', text:'La canción ya está en la primera posición.'}); submenu.style.display='none'; return; } [currentAlbum.songs[idx-1], currentAlbum.songs[idx]]=[currentAlbum.songs[idx], currentAlbum.songs[idx-1]]; updateUserData().then(()=>renderAlbumView()); submenu.style.display='none'; };
+      const moveDown = document.createElement('button'); moveDown.textContent='Mover abajo';
+      moveDown.onclick = e => { e.stopPropagation(); if(idx===currentAlbum.songs.length-1){ Swal.fire({icon:'info', title:'¡Atención!', text:'La canción ya está en la última posición.'}); submenu.style.display='none'; return; } [currentAlbum.songs[idx+1], currentAlbum.songs[idx]]=[currentAlbum.songs[idx], currentAlbum.songs[idx+1]]; updateUserData().then(()=>renderAlbumView()); submenu.style.display='none'; };
+      const deleteBtn = document.createElement('button'); deleteBtn.textContent='Eliminar';
+      deleteBtn.onclick = e => { e.stopPropagation(); Swal.fire({ icon:'warning', title:'¿Eliminar canción?', text:'Esta acción no puede revertirse', showCancelButton:true, confirmButtonText:'Sí, eliminar', cancelButtonText:'Cancelar' }).then(result=>{ if(result.isConfirmed){ currentAlbum.songs.splice(idx,1); updateUserData().then(()=>renderAlbumView()); }}); submenu.style.display='none'; };
+      const moveToFolderBtn=document.createElement('button'); moveToFolderBtn.textContent='Mover a carpeta';
+      moveToFolderBtn.onclick = e => { e.stopPropagation(); showMoveModal(song.title); submenu.style.display='none'; };
 
-      const moveDown = document.createElement('button');
-      moveDown.textContent = 'Mover abajo';
-      moveDown.onclick = e => {
-        e.stopPropagation();
-        if (idx === currentAlbum.songs.length - 1) {
-          Swal.fire({ icon: 'info', title: '¡Atención!', text: 'La canción ya está en la última posición.' });
-          submenu.style.display = 'none';
-          return;
-        }
-        [currentAlbum.songs[idx + 1], currentAlbum.songs[idx]] = [currentAlbum.songs[idx], currentAlbum.songs[idx + 1]];
-        updateUserData().then(() => renderAlbumView());
-        submenu.style.display = 'none';
-      };
-      submenu.appendChild(moveDown);
-
-      const deleteBtn = document.createElement('button');
-      deleteBtn.textContent = 'Eliminar';
-      deleteBtn.onclick = e => {
-        e.stopPropagation();
-        Swal.fire({
-          icon: 'warning',
-          title: '¿Eliminar canción?',
-          text: 'Esta acción no puede revertirse',
-          showCancelButton: true,
-          confirmButtonText: 'Sí, eliminar',
-          cancelButtonText: 'Cancelar'
-        }).then((result) => {
-          if (result.isConfirmed) {
-            currentAlbum.songs.splice(idx, 1);
-            updateUserData().then(() => renderAlbumView());
-          }
-        });
-        submenu.style.display = 'none';
-      };
-      submenu.appendChild(deleteBtn);
-
-      const moveToFolderBtn = document.createElement('button');
-      moveToFolderBtn.textContent = 'Mover a carpeta';
-      moveToFolderBtn.onclick = e => {
-        e.stopPropagation();
-        showMoveModal(song.title);
-        submenu.style.display = 'none';
-      };
-      submenu.appendChild(moveToFolderBtn);
-
-      div.appendChild(menuBtn);
-      div.appendChild(submenu);
-
-      menuBtn.onclick = e => {
-        e.stopPropagation();
-        submenu.style.display = submenu.style.display === 'flex' ? 'none' : 'flex';
-      };
-
-      div.onclick = () => openSong(song, currentAlbum.songs);
-
+      submenu.append(moveUp, moveDown, deleteBtn, moveToFolderBtn);
+      div.append(menuBtn, submenu);
+      menuBtn.onclick = e => { e.stopPropagation(); submenu.style.display = submenu.style.display === 'flex' ? 'none' : 'flex'; };
+      div.onclick = () => openSong(song, currentAlbum.songs); // canción en raíz
       albumSongsList.appendChild(div);
     });
   }
 }
 
-function renderFolderView(folder) {
+function renderFolderView(folder){
   foldersList.innerHTML = '';
   songsList.innerHTML = '';
-  albumSongsList.style.display = 'none';
-  songContent.style.display = 'none';
+  albumSongsList.style.display='none';
+  hideElement(songContent);
 
   backBtn.style.display = 'inline-block';
-  albumTitleEl.textContent = `${currentAlbum.name} / ${getFolderPath()}`;
-  showElement(foldersList);
-  showElement(songsList);
-
+  albumTitleEl.textContent = `${currentAlbum.name || ''} / ${getFolderPath()}`;
+  showElement(foldersList); showElement(songsList);
   createAlbumBtn.style.display = 'none';
 
-  if (folder.folders && folder.folders.length > 0) {
-    folder.folders.forEach(subfolder => {
+  // subcarpetas
+  if(folder.folders && folder.folders.length > 0){
+    folder.folders.forEach(subfolder=>{
       const div = document.createElement('div');
-      div.className = 'list-item subfolder';
+      div.className='list-item subfolder';
       div.innerHTML = `${subfolder.name} <span style="font-weight:600;color:#7a0000;">(Subcarpeta)</span>`;
       div.onclick = () => {
-        navigationStack.push({ type: 'folder', folder: currentFolder, album: currentAlbum });
+        navigationStack.push({ type:'folder', folder: currentFolder, album: currentAlbum });
         currentFolder = subfolder;
         renderFolderView(subfolder);
       };
-
-      const menuBtn = document.createElement('button');
-      menuBtn.className = 'menu-btn';
-      menuBtn.textContent = '⋮';
-
-      const submenu = createFolderMenu(subfolder, () => renderFolderView(folder));
-
-      div.appendChild(menuBtn);
-      div.appendChild(submenu);
-
-      menuBtn.onclick = e => {
-        e.stopPropagation();
-        submenu.style.display = submenu.style.display === 'flex' ? 'none' : 'flex';
-      };
-
+      const menuBtn=document.createElement('button'); menuBtn.className='menu-btn'; menuBtn.textContent='⋮';
+      const submenu=createFolderMenu(subfolder, ()=>renderFolderView(folder));
+      div.append(menuBtn, submenu);
+      menuBtn.onclick = e => { e.stopPropagation(); submenu.style.display = submenu.style.display === 'flex' ? 'none' : 'flex'; };
       songsList.appendChild(div);
     });
   }
-  if (!folder.songs || folder.songs.length === 0) {
+
+  // canciones en la carpeta actual
+  if(!folder.songs || folder.songs.length===0){
     songsList.innerHTML += '<p style="text-align:center;color:#555;">No hay canciones en esta carpeta</p>';
   } else {
-    folder.songs.forEach((song, idx) => {
+    folder.songs.forEach((song, idx)=>{
       const div = document.createElement('div');
-      div.className = 'list-item';
+      div.className='list-item';
       div.textContent = song.title + (song.tone ? ` (${song.tone})` : '');
+      const menuBtn=document.createElement('button'); menuBtn.className='menu-btn'; menuBtn.textContent='⋮';
+      const submenu=document.createElement('div'); submenu.className='submenu'; submenu.style.flexDirection='column';
 
-      const menuBtn = document.createElement('button');
-      menuBtn.className = 'menu-btn';
-      menuBtn.textContent = '⋮';
+      const moveUpBtn=document.createElement('button'); moveUpBtn.textContent='Mover arriba';
+      moveUpBtn.onclick = e => { e.stopPropagation(); if(idx===0){ Swal.fire({icon:'info', title:'¡Atención!', text:'La canción ya está en la primera posición.'}); submenu.style.display='none'; return; } [folder.songs[idx-1], folder.songs[idx]]=[folder.songs[idx], folder.songs[idx-1]]; updateUserData().then(()=>renderFolderView(folder)); submenu.style.display='none'; };
+      const moveDownBtn=document.createElement('button'); moveDownBtn.textContent='Mover abajo';
+      moveDownBtn.onclick = e => { e.stopPropagation(); if(idx===folder.songs.length-1){ Swal.fire({icon:'info', title:'¡Atención!', text:'La canción ya está en la última posición.'}); submenu.style.display='none'; return; } [folder.songs[idx+1], folder.songs[idx]]=[folder.songs[idx], folder.songs[idx+1]]; updateUserData().then(()=>renderFolderView(folder)); submenu.style.display='none'; };
+      const deleteBtn=document.createElement('button'); deleteBtn.textContent='Eliminar';
+      deleteBtn.onclick = e => { e.stopPropagation(); Swal.fire({ icon:'warning', title:'¿Eliminar canción?', text:'Esta acción no puede revertirse', showCancelButton:true, confirmButtonText:'Sí, eliminar', cancelButtonText:'Cancelar' }).then(result=>{ if(result.isConfirmed){ folder.songs.splice(idx,1); updateUserData().then(()=>renderFolderView(folder)); }}); submenu.style.display='none'; };
+      const moveToFolderBtn=document.createElement('button'); moveToFolderBtn.textContent='Mover a carpeta';
+      moveToFolderBtn.onclick = e => { e.stopPropagation(); showMoveModal(song.title); submenu.style.display='none'; };
 
-      const submenu = document.createElement('div');
-      submenu.className = 'submenu';
-      submenu.style.flexDirection = 'column';
+      submenu.append(moveUpBtn, moveDownBtn, deleteBtn, moveToFolderBtn);
+      div.append(menuBtn, submenu);
+      menuBtn.onclick = e => { e.stopPropagation(); submenu.style.display = submenu.style.display === 'flex' ? 'none' : 'flex'; };
 
-      const moveUpBtn = document.createElement('button');
-      moveUpBtn.textContent = 'Mover arriba';
-      moveUpBtn.onclick = e => {
-        e.stopPropagation();
-        if (idx === 0) {
-          Swal.fire({ icon: 'info', title: '¡Atención!', text: 'La canción ya está en la primera posición.' });
-          submenu.style.display = 'none';
-          return;
-        }
-        [folder.songs[idx - 1], folder.songs[idx]] = [folder.songs[idx], folder.songs[idx - 1]];
-        updateUserData().then(() => renderFolderView(folder));
-        submenu.style.display = 'none';
-      };
-      submenu.appendChild(moveUpBtn);
-
-      const moveDownBtn = document.createElement('button');
-      moveDownBtn.textContent = 'Mover abajo';
-      moveDownBtn.onclick = e => {
-        e.stopPropagation();
-        if (idx === folder.songs.length - 1) {
-          Swal.fire({ icon: 'info', title: '¡Atención!', text: 'La canción ya está en la última posición.' });
-          submenu.style.display = 'none';
-          return;
-        }
-        [folder.songs[idx + 1], folder.songs[idx]] = [folder.songs[idx], folder.songs[idx + 1]];
-        updateUserData().then(() => renderFolderView(folder));
-        submenu.style.display = 'none';
-      };
-      submenu.appendChild(moveDownBtn);
-
-      const deleteBtn = document.createElement('button');
-      deleteBtn.textContent = 'Eliminar';
-      deleteBtn.onclick = e => {
-        e.stopPropagation();
-        Swal.fire({
-          icon: 'warning',
-          title: '¿Eliminar canción?',
-          text: 'Esta acción no puede revertirse',
-          showCancelButton: true,
-          confirmButtonText: 'Sí, eliminar',
-          cancelButtonText: 'Cancelar'
-        }).then((result) => {
-          if (result.isConfirmed) {
-            folder.songs.splice(idx, 1);
-            updateUserData().then(() => renderFolderView(folder));
-          }
-        });
-        submenu.style.display = 'none';
-      };
-      submenu.appendChild(deleteBtn);
-
-      const moveToFolderBtn = document.createElement('button');
-      moveToFolderBtn.textContent = 'Mover a carpeta';
-      moveToFolderBtn.onclick = e => {
-        e.stopPropagation();
-        showMoveModal(song.title);
-        submenu.style.display = 'none';
-      };
-      submenu.appendChild(moveToFolderBtn);
-
-      div.appendChild(menuBtn);
-      div.appendChild(submenu);
-
-      menuBtn.onclick = e => {
-        e.stopPropagation();
-        submenu.style.display = submenu.style.display === 'flex' ? 'none' : 'flex';
-      };
-
+      // abrir canción desde carpeta (importante: pasamos folder.songs como lista)
       div.onclick = () => openSong(song, folder.songs);
 
       songsList.appendChild(div);
@@ -628,246 +430,254 @@ function renderFolderView(folder) {
   }
 }
 
-function getFolderPath() {
+function getFolderPath(){
   let parts = [];
   let temp = currentFolder;
-  while (temp) {
+  while(temp){
     parts.unshift(temp.name);
+    // intenta encontrar el padre examinando navigationStack (si lo guardaste)
     const back = navigationStack.slice().reverse().find(n => n.type === 'folder' && n.folder && n.folder.folders && n.folder.folders.includes(temp));
     temp = back ? back.folder : null;
   }
   return parts.join(' / ');
 }
 
-// Mejor regexp para acordes, evita detección en palabras con vocal
-function renderLyrics(lyrics) {
+/* ---------- RENDER LYRICS & CHORDS ---------- */
+function renderLyrics(lyrics){
+  // lyrics es array de líneas (o string)
+  if(!lyrics) { songLyricsEl.innerHTML = ''; return; }
+  const lines = Array.isArray(lyrics) ? lyrics : (typeof lyrics === 'string' ? lyrics.split('\n') : []);
   const chordRegex = /(?<![a-zA-Z0-9])([A-G](?:#|b)?(?:m|maj|min|dim|aug|sus2|sus4|add9|add11|m7|7|9|11|13|m9|m11|m13|maj7|maj9|maj13)?(?:\/[A-G](?:#|b)?)?)(?![a-zA-Z0-9])/g;
-
-  songLyricsEl.innerHTML = lyrics.map(line => 
-    line.replace(chordRegex, match => 
-      `<span class="chord" onclick="showChordPreview('${match}')">${match}</span>`
-    )
-  ).join('\n');
+  songLyricsEl.innerHTML = lines.map(line => line.replace(chordRegex, match => `<span class="chord" onclick="showChordPreview('${match}')">${match}</span>`)).join('\n');
 }
-
 
 window.showChordPreview = chord => {
   chordPreview.innerText = `🎸 ${chord}`;
   chordPreview.style.display = 'block';
-  setTimeout(() => chordPreview.style.display = 'none', 1600);
-}
+  setTimeout(()=> chordPreview.style.display='none', 1600);
+};
 
-// Abrir canción actual con tono guardado
-function openSong(song, songArray) {
-  currentSong = song;
-  currentSongList = songArray;
-
-  currentSongIndex = songArray.findIndex(s => s.title === song.title);
-  const songInfo = songsDB.find(s => s.title === song.title) || { chords: [], tone: 'C' };
-  originalTone = songInfo.tone || 'C';
-  currentTone = song.tone || originalTone;
-
-  songTitleEl.textContent = songInfo.title || song.title;
-  toneValueEl.textContent = currentTone;
-
-toneSelect.innerHTML = '';
-scale.forEach(t => {
-  const opt = document.createElement('option');
-  opt.value = t;
-  opt.textContent = t;
-
-  // equivalencias (para D# == Eb, A# == Bb, etc.)
-  const enharmonic = {
-    "D#": "Eb", "Eb": "D#",
-    "A#": "Bb", "Bb": "A#",
-    "G#": "Ab", "Ab": "G#",
-    "C#": "Db", "Db": "C#",
-    "F#": "Gb", "Gb": "F#",
-    "D#m": "Ebm", "Ebm": "D#m",
-    "A#m": "Bbm", "Bbm": "A#m",
-    "G#m": "Abm", "Abm": "G#m",
-    "C#m": "Dbm", "Dbm": "C#m",
-    "F#m": "Gbm", "Gbm": "F#m"
-  };
-
-  if (t === currentTone || enharmonic[t] === currentTone) {
-    opt.selected = true;
-  }
-
-  toneSelect.appendChild(opt);
-});
-
-  renderLyrics(transpose(songInfo.chords, originalTone, currentTone));
-
-  toneSelect.onchange = () => {
-    const newTone = toneSelect.value;
-    currentTone = newTone;
-    renderLyrics(transpose(songInfo.chords, originalTone, currentTone));
-    toneValueEl.textContent = currentTone;
-  };
-
-  hideElement(foldersList);
-  hideElement(albumSongsList);
-  hideElement(songsList);
-  showElement(songContent);
-}
-
-function transpose(lyrics, from, to) {
-  const semitones = (scale.indexOf(to) - scale.indexOf(from) + 12) % 12;
-  return lyrics.map(l => l.replace(/([A-G][#b]?(?:m|maj7|sus|sus2|sus4|add9|dim|aug|7)?)/g, c => transposeChord(c, semitones)));
-}
-function transposeChord(chord, semitones) {
-  const notes = ["C", "C#", "D", "Eb", "E", "F", "F#", "G", "Ab", "A", "Bb", "B"];
-  const noteMap = {
-    "Db": "C#", "D#": "Eb", "Gb": "F#", "G#": "Ab", "A#": "Bb",
-    "Cb": "B", "Fb": "E", "E#": "F", "B#": "C"
-  };
-
-  return chord.replace(/([A-G](?:#|b)?)(.*)/, (match, root, suffix) => {
+/* ---------- TRANSPOSICIÓN ---------- */
+function transposeChord(chord, semitones){
+  const notes = ["C","C#","D","Eb","E","F","F#","G","Ab","A","Bb","B"];
+  const noteMap = {"Db":"C#","D#":"Eb","Gb":"F#","G#":"Ab","A#":"Bb","Cb":"B","Fb":"E","E#":"F","B#":"C"};
+  return chord.replace(/([A-G](?:#|b)?)(.*)/, (m, root, suffix)=>{
     root = noteMap[root] || root;
-    const index = notes.indexOf(root);
-    if (index === -1) return match;
-
-    let newIndex = (index + semitones + 12) % 12;
-    return notes[newIndex] + suffix;
+    const i = notes.indexOf(root);
+    if(i===-1) return m;
+    const ni = (i + semitones + 12) % 12;
+    return notes[ni] + suffix;
   });
 }
 
-function transposeHalf(d) {
+function transpose(lines, from, to){
+  const semitones = (scale.indexOf(to) - scale.indexOf(from) + 12) % 12;
+  return lines.map(l => l.replace(/([A-G][#b]?(?:m|maj7|sus|sus2|sus4|add9|dim|aug|7)?)/g, c => transposeChord(c, semitones)));
+}
+
+function transposeHalf(d){
   const idx = (scale.indexOf(currentTone) + d + 12) % 12;
   currentTone = scale[idx];
   toneSelect.value = currentTone;
   toneValueEl.textContent = currentTone;
-  const songInfo = songsDB.find(s => s.title === currentSong.title) || { chords: [], tone: 'C' };
-  renderLyrics(transpose(songInfo.chords, originalTone, currentTone));
+  const songInfo = findSongInfo(currentSong) || { chords: [], lyrics: [], tone: 'C' };
+  renderLyrics(transpose(songInfo.chords || songInfo.lyrics || [], originalTone, currentTone));
 }
-function transposeTone(d) {
-  transposeHalf(2 * d);
-}
-function resetTone() {
+function transposeTone(d){ transposeHalf(2*d); }
+function resetTone(){
   currentTone = originalTone;
   toneSelect.value = currentTone;
   toneValueEl.textContent = currentTone;
-  const songInfo = songsDB.find(s => s.title === currentSong.title) || { chords: [], tone: 'C' };
-  renderLyrics(transpose(songInfo.chords, originalTone, currentTone));
+  const songInfo = findSongInfo(currentSong) || { chords: [], lyrics: [], tone: 'C' };
+  renderLyrics(transpose(songInfo.chords || songInfo.lyrics || [], originalTone, currentTone));
 }
-// Navegación canción anterior/flecha atrás
-songBackBtn.onclick = () => {
-  if (!currentSongList.length) {
-    Swal.fire({ icon: 'info', title: 'Atención', text: 'No hay canciones para retroceder.' });
-    return;
+
+/* ---------- ayuda para buscar canción en DB local o Firestore album structure ---------- */
+function findSongInfo(song){
+  // prioriza songsDB (local) si coincide por título, sino usa el objeto song (que puede venir desde Firestore)
+  if(!song) return null;
+  const found = songsDB.find(s => s.title === song.title);
+  if(found) return found;
+  // si el objeto song contiene chords/lyrics/tone, devuélvelo
+  return song.chords || song.lyrics || song.tone ? song : null;
+}
+
+/* ---------- OPEN SONG: UNIFICADA y segura ---------- */
+function openSong(song, songArray){
+  // Push en la pila para poder volver: guardamos contexto actual (folder si existe)
+  navigationStack.push({ type: 'song', folder: currentFolder, album: currentAlbum, song: song });
+
+  currentSong = song;
+  currentSongList = songArray || [];
+  currentSongIndex = currentSongList.findIndex(s => s.title === song.title);
+
+  const songInfo = findSongInfo(song) || { chords: [], lyrics: [], tone: (song && song.tone) || 'C' };
+  originalTone = songInfo.tone || 'C';
+  currentTone = song.tone || originalTone;
+
+  // título
+  songTitleEl.textContent = songInfo.title || song.title || '';
+
+  // rellenar select de tonos
+  toneSelect.innerHTML = '';
+  scale.forEach(t => {
+    const opt = document.createElement('option');
+    opt.value = t; opt.textContent = t;
+    // enharmonic mapping (si quieres) -- simplificado: selecciona por igualdad
+    if(t === currentTone) opt.selected = true;
+    toneSelect.appendChild(opt);
+  });
+
+  // render acordes/letra
+  const lyricsLines = songInfo.chords || songInfo.lyrics || [];
+  renderLyrics(transpose(Array.isArray(lyricsLines) ? lyricsLines : (typeof lyricsLines === 'string' ? lyricsLines.split('\n') : []), originalTone, currentTone));
+
+  toneValueEl.textContent = currentTone;
+
+  // mostrar vista canción y ocultar listas
+  showElement(songContent);
+  hideElement(foldersList);
+  hideElement(albumSongsList);
+  hideElement(songsList);
+  closeSongBtn.style.display = 'inline-block';
+  songContent.setAttribute('aria-hidden', 'false');
+
+  // onchange del selector de tonos
+  toneSelect.onchange = () => {
+    currentTone = toneSelect.value;
+    toneValueEl.textContent = currentTone;
+    const sInfo = findSongInfo(currentSong) || { chords: [], lyrics: [], tone: originalTone };
+    renderLyrics(transpose(Array.isArray(sInfo.chords) ? sInfo.chords : (sInfo.lyrics || []).split('\n'), originalTone, currentTone));
+  };
+}
+
+/* ---------- Cerrar canción: volver a carpeta o álbum ---------- */
+closeSongBtn.addEventListener('click', () => {
+  hideElement(songContent);
+  closeSongBtn.style.display = 'none';
+  songContent.setAttribute('aria-hidden', 'true');
+
+  // si estaba dentro de una carpeta, volver a ella, sino al álbum
+  if(currentFolder){
+    renderFolderView(currentFolder);
+  } else {
+    renderAlbumView();
   }
-  if (currentSongIndex === 0) {
-    Swal.fire({ icon: 'info', title: 'Info', text: 'Ya llegaste a la primera canción.' });
-    return;
-  }
+});
+
+/* ---------- botones Prev/Next dentro de la canción ---------- */
+songBackBtn.addEventListener('click', () => {
+  if(!currentSongList || currentSongList.length===0){ Swal.fire({icon:'info', title:'Atención', text:'No hay canciones para retroceder.'}); return; }
+  if(currentSongIndex <= 0){ Swal.fire({icon:'info', title:'Info', text:'Ya llegaste a la primera canción.'}); return; }
   currentSongIndex--;
   openSong(currentSongList[currentSongIndex], currentSongList);
-};
-// Navegación canción siguiente/flecha adelante
-nextSongBtn.onclick = () => {
-  if (!currentSongList.length) {
-    Swal.fire({ icon: 'info', title: 'Atención', text: 'No hay canciones para avanzar.' });
-    return;
-  }
-  if (currentSongIndex === currentSongList.length - 1) {
-    Swal.fire({ icon: 'info', title: 'Info', text: 'Ya llegaste a la última canción.' });
-    return;
-  }
+});
+nextSongBtn.addEventListener('click', () => {
+  if(!currentSongList || currentSongList.length===0){ Swal.fire({icon:'info', title:'Atención', text:'No hay canciones para avanzar.'}); return; }
+  if(currentSongIndex >= currentSongList.length - 1){ Swal.fire({icon:'info', title:'Info', text:'Ya llegaste a la última canción.'}); return; }
   currentSongIndex++;
   openSong(currentSongList[currentSongIndex], currentSongList);
-};
-// Volver atrás en carpetas
-backBtn.onclick = () => {
-  if (navigationStack.length > 0) {
-    const prev = navigationStack.pop();
-    if (prev.type === 'album') {
-      currentFolder = null;
-      currentAlbum = prev.album;
-      renderAlbumView();
-    } else {
-      currentFolder = prev.folder;
-      renderFolderView(currentFolder);
-    }
-  }
-};
-// Botón volver al inicio o a index
-homeBtn.onclick = () => {
-  navigationStack = [];
-  currentFolder = null;
-  window.location.href = 'index.html';
-};
+});
 
-// Modal mover canción entre carpetas
-function showMoveModal(songTitle) {
+/* ---------- backBtn (historial navigationStack) ---------- */
+backBtn.addEventListener('click', () => {
+  if(navigationStack.length === 0) return;
+  const prev = navigationStack.pop();
+
+  // Si venías desde una canción -> ir a su carpeta/album
+  if(prev.type === 'song'){
+    if(prev.folder){
+      currentFolder = prev.folder;
+      renderFolderView(prev.folder);
+    } else {
+      currentFolder = null;
+      renderAlbumView();
+    }
+    return;
+  }
+
+  // Si venías desde una carpeta -> ir a su padre guardado en stack
+  if(prev.type === 'folder'){
+    if(prev.folder){
+      currentFolder = prev.folder;
+      renderFolderView(prev.folder);
+    } else {
+      currentFolder = null;
+      renderAlbumView();
+    }
+    return;
+  }
+
+  // Si venías del álbum
+  if(prev.type === 'album'){
+    currentFolder = null;
+    currentAlbum = prev.album || currentAlbum;
+    renderAlbumView();
+    return;
+  }
+});
+
+/* ---------- Modal mover canción entre carpetas ---------- */
+function showMoveModal(songTitle){
   moveModal.style.display = 'flex';
   folderSelect.innerHTML = '';
-  function appendFolders(folders, prefix = '') {
-    folders.forEach(f => {
+  function appendFolders(folders, prefix=''){
+    (folders||[]).forEach(f=>{
       const opt = document.createElement('option');
       opt.value = f.name;
       opt.textContent = prefix + f.name;
       folderSelect.appendChild(opt);
-      if (f.folders && f.folders.length > 0) appendFolders(f.folders, prefix + '— ');
+      if(f.folders && f.folders.length > 0) appendFolders(f.folders, prefix + '— ');
     });
   }
-  if (currentAlbum.folders) appendFolders(currentAlbum.folders);
-
+  if(currentAlbum.folders) appendFolders(currentAlbum.folders);
   confirmMove.onclick = () => {
     const selected = folderSelect.value;
-    function findFolderByName(folders, name) {
-      for (const f of folders) {
-        if (f.name === name) return f;
-        if (f.folders && f.folders.length > 0) {
+    function findFolderByName(folders, name){
+      for(const f of folders){
+        if(f.name === name) return f;
+        if(f.folders && f.folders.length > 0){
           const found = findFolderByName(f.folders, name);
-          if (found) return found;
+          if(found) return found;
         }
       }
       return null;
     }
     const targetFolder = findFolderByName(currentAlbum.folders || [], selected);
-    if (!targetFolder) return;
-    function removeSongFromList(list) {
+    if(!targetFolder) return;
+    function removeSongFromList(list){
       const idx = list.findIndex(s => s.title === songTitle);
-      if (idx > -1) {
-        return list.splice(idx, 1)[0];
-      }
+      if(idx > -1) return list.splice(idx,1)[0];
       return null;
     }
-    let songObj = removeSongFromList(currentAlbum.songs);
-    function removeSongFromFolders(folders) {
-      for (const folder of folders) {
-        if (folder.songs) {
+    let songObj = removeSongFromList(currentAlbum.songs || []);
+    function removeSongFromFolders(folders){
+      for(const folder of folders){
+        if(folder.songs){
           const removed = removeSongFromList(folder.songs);
-          if (removed) return removed;
+          if(removed) return removed;
         }
-        if (folder.folders) {
+        if(folder.folders){
           const removed = removeSongFromFolders(folder.folders);
-          if (removed) return removed;
+          if(removed) return removed;
         }
       }
       return null;
     }
-    if (!songObj && currentAlbum.folders) {
-      songObj = removeSongFromFolders(currentAlbum.folders);
-    }
-    if (songObj) {
-      if (!targetFolder.songs) targetFolder.songs = [];
+    if(!songObj && currentAlbum.folders) songObj = removeSongFromFolders(currentAlbum.folders);
+    if(songObj){
+      if(!targetFolder.songs) targetFolder.songs = [];
       targetFolder.songs.push(songObj);
-      updateUserData().then(() => {
-        renderAlbumView();
-        moveModal.style.display = 'none';
-      });
+      updateUserData().then(()=>{ renderAlbumView(); moveModal.style.display='none'; });
     }
   };
-  cancelMove.onclick = () => {
-    moveModal.style.display = 'none';
-  };
+  cancelMove.onclick = () => moveModal.style.display = 'none';
 }
-// Crear carpeta solo en raíz
-createAlbumBtn.onclick = async () => {
-  if (currentFolder) {
-    Swal.fire({icon:'info',title:'Atención',text:'Solo puedes crear carpetas en la raíz del álbum'});
+
+/* ---------- crear carpeta en raíz ---------- */
+createAlbumBtn.addEventListener('click', async () => {
+  if(currentFolder){
+    Swal.fire({icon:'info', title:'Atención', text:'Solo puedes crear carpetas en la raíz del álbum'});
     return;
   }
   const { value: folderName } = await Swal.fire({
@@ -877,48 +687,20 @@ createAlbumBtn.onclick = async () => {
     inputPlaceholder: 'Ingresa nombre',
     showCancelButton: true
   });
-  if (folderName && folderName.trim() !== '') {
-    if (!currentAlbum.folders) currentAlbum.folders = [];
+  if(folderName && folderName.trim() !== ''){
+    if(!currentAlbum.folders) currentAlbum.folders = [];
     currentAlbum.folders.push({ name: folderName.trim(), songs: [], folders: [] });
     await updateUserData();
     renderAlbumView();
   }
-};
-// Inicio app y control estado sesión
-onAuthStateChanged(auth, user => {
-  if (user) {
-    currentUser = user;
-    loadSongsJson().then(() => {
-      loadUserData(user.uid).then(data => {
-        userData = data;
-        if (!userData.albums) userData.albums = [];
-        const albumParam = getQueryParam('album');
-        currentAlbum = albumParam ? userData.albums.find(a => a.name === albumParam) : userData.albums[0];
-        if (!currentAlbum) {
-          currentAlbum = { name: 'Nuevo Álbum', songs: [], folders: [] };
-          userData.albums.push(currentAlbum);
-          updateUserData();
-        }
-        currentFolder = null;
-        navigationStack = [];
-        renderAlbumView();
-      });
-    });
-  } else {
-    window.location.href = 'login.html';
-  }
 });
 
-const autoScrollToggleBtn = document.getElementById('autoScrollToggleBtn');
-const scrollControlBar = document.getElementById('scrollControlBar');
-const scrollSpeedInput = document.getElementById('scrollSpeed');
-const stopScrollBtn = document.getElementById('stopScrollBtn');
-
+/* ---------- AUTO SCROLL ---------- */
 let scrollInterval = null;
 let isPaused = false;
 
 autoScrollToggleBtn.addEventListener('click', () => {
-  if (scrollControlBar.style.display === 'flex') {
+  if(scrollControlBar.style.display === 'flex'){
     stopScrolling();
     scrollControlBar.style.display = 'none';
     autoScrollToggleBtn.textContent = '▶ Desplazar';
@@ -936,87 +718,84 @@ stopScrollBtn.addEventListener('click', () => {
 });
 
 scrollSpeedInput.addEventListener('input', () => {
-  if (scrollInterval) {
+  if(scrollInterval){
     stopScrolling();
     startScrolling();
   }
 });
 
-function startScrolling() {
-  if (scrollInterval) return;
-
+function startScrolling(){
+  if(scrollInterval) return;
   const speedValue = Number(scrollSpeedInput.value);
-  let speed;
-  switch (speedValue) {
-    case 1:
-      speed = 0.5;
-      break;
-    case 2:
-      speed = 1;
-      break;
-    case 3:
-      speed = 2;
-      break;
-    case 4:
-      speed = 3;
-      break;
-    case 5:
-      speed = 4;
-      break;
-    default:
-      speed = 5;
-  }
-
-  let scrollDuration = 2000; // 🔹 Baja durante 2 segundos
-  let pauseDuration = 4000;  // 🔹 Pausa 1 segundo
-
-  function scrollCycle() {
-    if (isPaused) return;
-
+  let speed = 0.5 + (speedValue-1) * 0.5; // escala simple
+  let scrollDuration = 2000;
+  let pauseDuration = 4000;
+  function scrollCycle(){
+    if(isPaused) return;
     let elapsed = 0;
-    scrollInterval = setInterval(() => {
+    scrollInterval = setInterval(()=>{
       window.scrollBy(0, speed);
       elapsed += 30;
-
-      // Cuando pasa el tiempo de desplazamiento -> pausa
-      if (elapsed >= scrollDuration) {
+      if(elapsed >= scrollDuration){
         clearInterval(scrollInterval);
         scrollInterval = null;
-
-        // Pausa de 1 segundo
-        setTimeout(() => {
-          if ((window.innerHeight + window.scrollY) < document.body.offsetHeight && !isPaused) {
-            scrollCycle(); // Reinicia el ciclo
+        setTimeout(()=>{
+          if((window.innerHeight + window.scrollY) < document.body.offsetHeight && !isPaused){
+            scrollCycle();
           } else {
             stopScrolling();
-            scrollControlBar.style.display = 'none';
+            scrollControlBar.style.display='none';
             autoScrollToggleBtn.textContent = '▶ Desplazar';
           }
         }, pauseDuration);
       }
-
-      // Si llega al final de la página
-      if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+      if((window.innerHeight + window.scrollY) >= document.body.offsetHeight){
         stopScrolling();
-        scrollControlBar.style.display = 'none';
+        scrollControlBar.style.display='none';
         autoScrollToggleBtn.textContent = '▶ Desplazar';
       }
     }, 30);
   }
-
   scrollCycle();
 }
-
-function stopScrolling() {
+function stopScrolling(){
   isPaused = true;
-  if (scrollInterval) {
-    clearInterval(scrollInterval);
-    scrollInterval = null;
-  }
-  setTimeout(() => (isPaused = false), 300); // Evita reinicio inmediato
+  if(scrollInterval) { clearInterval(scrollInterval); scrollInterval = null; }
+  setTimeout(()=> isPaused = false, 300);
 }
 
+/* ---------- INICIO: auth y carga ---------- */
+onAuthStateChanged(auth, async (user) => {
+  if(user){
+    currentUser = user;
+    await loadSongsJson(); // optional; no falla si no existe
+    userData = await loadUserData(user.uid);
+    if(!userData) userData = { albums: [] };
+    if(!userData.albums) userData.albums = [];
 
+    const albumParam = new URLSearchParams(window.location.search).get('album');
+    currentAlbum = albumParam ? userData.albums.find(a => a.name === albumParam) : userData.albums[0];
+
+    if(!currentAlbum){
+      currentAlbum = { name: 'Nuevo Álbum', songs: [], folders: [] };
+      userData.albums.push(currentAlbum);
+      await updateUserData();
+    }
+
+    currentFolder = null;
+    navigationStack = [];
+    renderAlbumView();
+  } else {
+    // no logueado -> enviar a login
+    window.location.href = 'login.html';
+  }
+});
+
+/* ---------- Evitar duplicados y errores ---------- */
+/* Ten en cuenta: si copias este archivo en tu proyecto y ya tienes funciones/variables con el mismo nombre en otro <script>,
+   puede causar conflictos. Usa este archivo como la única fuente de control JS para esta página. */
+
+/* ---------- FIN ---------- */
 </script>
 </body>
 </html>

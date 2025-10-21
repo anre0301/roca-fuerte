@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mi Perfil</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root[data-tema="claro"] {
+      --bg: linear-gradient(180deg, #0077b6, #00b4d8);
+      --text: white;
+      --card: rgba(255, 255, 255, 0.1);
+      --btn-bg: white;
+      --btn-text: #0077b6;
+    }
+
+    :root[data-tema="oscuro"] {
+      --bg: linear-gradient(180deg, #121212, #1b1b1b);
+      --text: #f1f1f1;
+      --card: rgba(255, 255, 255, 0.08);
+      --btn-bg: #333;
+      --btn-text: #00b4d8;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Poppins', sans-serif;
+      text-align: center;
+      padding: 40px 15px;
+      transition: background 0.4s, color 0.4s;
+    }
+
+    .perfil-container {
+      background: var(--card);
+      border-radius: 20px;
+      padding: 25px;
+      max-width: 380px;
+      margin: 0 auto;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      animation: fadeIn 0.4s ease;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      font-size: 1.6em;
+    }
+
+    .dato {
+      background: rgba(255,255,255,0.1);
+      border-radius: 10px;
+      margin: 8px 0;
+      padding: 10px;
+      font-size: 1rem;
+    }
+
+    .btn {
+      margin-top: 12px;
+      background: var(--btn-bg);
+      color: var(--btn-text);
+      border: none;
+      border-radius: 8px;
+      padding: 10px 18px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      align-items: start;
+      margin: 10px 0;
+      text-align: left;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 8px;
+      border: none;
+      border-radius: 8px;
+      margin-top: 5px;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="perfil-container">
+    <h1>👤 Mi Perfil</h1>
+    <div id="perfilDatos">
+      <div class="dato">Cargando datos...</div>
+    </div>
+
+    <button class="btn" id="temaBtn">🌙 Cambiar a tema oscuro</button>
+    <button class="btn" id="resetPassBtn">🔒 Restablecer contraseña</button>
+    <button class="btn" id="volverBtn">⬅ Volver al inicio</button>
+  </div>
+
+  <script>
+    // Aplicar tema guardado
+    const temaGuardado = localStorage.getItem("tema") || "claro";
+    document.documentElement.setAttribute("data-tema", temaGuardado);
+
+    const perfilDatos = document.getElementById("perfilDatos");
+    const temaBtn = document.getElementById("temaBtn");
+
+    // Mostrar datos guardados
+    const usuario = JSON.parse(localStorage.getItem("perfilUsuario"));
+
+    if (usuario) {
+      perfilDatos.innerHTML = `
+        <div class="dato"><b>Nombre:</b> ${usuario.nombre}</div>
+        <div class="dato"><b>Correo:</b> ${usuario.email}</div>
+        <div class="dato"><b>Contraseña:</b> ******</div>
+      `;
+    } else {
+      perfilDatos.innerHTML = "<div class='dato'>Usuario no autenticado.</div>";
+    }
+
+    // Botón volver
+    document.getElementById("volverBtn").addEventListener("click", () => {
+      window.location.href = "index.html";
+    });
+
+    // Cambiar tema
+    temaBtn.addEventListener("click", () => {
+      const temaActual = document.documentElement.getAttribute("data-tema");
+      const nuevoTema = temaActual === "claro" ? "oscuro" : "claro";
+      document.documentElement.setAttribute("data-tema", nuevoTema);
+      localStorage.setItem("tema", nuevoTema);
+      temaBtn.textContent = nuevoTema === "oscuro" ? "☀ Cambiar a tema claro" : "🌙 Cambiar a tema oscuro";
+    });
+
+    // Mostrar texto del botón según el tema
+    if (temaGuardado === "oscuro") {
+      temaBtn.textContent = "☀ Cambiar a tema claro";
+    }
+
+    // Restablecer contraseña (simulado)
+    document.getElementById("resetPassBtn").addEventListener("click", () => {
+      if (!usuario) {
+        alert("Debes iniciar sesión primero.");
+        return;
+      }
+
+      const confirmar = confirm(`¿Quieres restablecer la contraseña del correo ${usuario.email}?`);
+      if (confirmar) {
+        alert("🔗 Se ha enviado un enlace de restablecimiento a tu correo.");
+      }
+    });
+  </script>
+</body>
+</html>
