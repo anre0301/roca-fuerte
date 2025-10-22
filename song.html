@@ -245,6 +245,10 @@
 <div class="container">
   <button class="back-btn" onclick="history.back()">←</button>
   <h1 id="songTitle">Cargando...</h1>
+  <div id="authorContainer" style="text-align:center; margin-bottom:10px;">
+  <img id="authorPhoto" src="" alt="Autor" style="width:60px;height:60px;border-radius:50%; display:none; object-fit:cover; margin-bottom:5px;">
+  <p id="authorName" style="margin:0; font-weight:600;"></p>
+</div>
   <div class="tone" id="tone">
     🎵 Tono actual: <span id="toneValue">C</span>
     <div class="tone-menu" id="toneMenu">
@@ -259,6 +263,21 @@
     <select id="toneSelect"></select>
     <button class="tone-original" id="btnOriginalTone">🎵 Tono original</button>
     <button id="addToAlbumBtn">➕ Agregar a álbum</button>
+	<select id="capoSelect">
+  <option value="0" selected>Sin capo</option>
+  <option value="1">Capo 1° traste</option>
+  <option value="2">Capo 2° traste</option>
+  <option value="3">Capo 3° traste</option>
+  <option value="4">Capo 4° traste</option>
+  <option value="5">Capo 5° traste</option>
+  <option value="6">Capo 6° traste</option>
+  <option value="7">Capo 7° traste</option>
+  <option value="8">Capo 8° traste</option>
+  <option value="9">Capo 9° traste</option>
+  <option value="10">Capo 10° traste</option>
+  <option value="11">Capo 11° traste</option>
+  <option value="12">Capo 12° traste</option>
+</select>
   </div>
   <pre id="songLyrics"></pre>
 </div>
@@ -546,6 +565,7 @@ async function loadSong() {
   currentTone = song.tone;
   originalTone = song.tone;
   document.getElementById("songTitle").innerText = song.title;
+  loadAuthorPhoto(song.author || song.autor || "Desconocido");
 
   toneValue.innerText = song.tone;
   renderLyrics([...(song.intro ? [`Intro: ${song.intro}\n`] : []), ...song.chords]);
@@ -558,6 +578,85 @@ async function loadSong() {
   opt.textContent = t;
   select.appendChild(opt);
 });
+
+function applyCapo(lyrics, capoFret, currentKey) {
+  if (capoFret === 0) return lyrics; // sin capo, nada cambia
+
+  const allTones = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
+  const indexOf = note => allTones.indexOf(note);
+
+  return lyrics.map(line => {
+    const chordRegex = /([A-G](?:#|b)?)([^ \n\/]*)(?:\/([A-G](?:#|b)?))?/g;
+
+    return line.replace(chordRegex, (match, root, suffix = '', bass) => {
+      let rootNorm = root;
+      if (/b/.test(root)) rootNorm = flatToSharp(root);
+
+      const idx = indexOf(rootNorm);
+      if (idx === -1) return match;
+
+      // Sumamos capo solo para la visualización
+      const newRoot = allTones[(idx + capoFret) % 12];
+      let result = newRoot + suffix;
+
+      if (bass) {
+        let bassNorm = bass;
+        if (/b/.test(bass)) bassNorm = flatToSharp(bass);
+        const bassIdx = indexOf(bassNorm);
+        if (bassIdx !== -1) result += '/' + allTones[(bassIdx + capoFret) % 12];
+        else result += '/' + bass;
+      }
+
+      return result;
+    });
+  });
+}
+
+const capoSelect = document.getElementById("capoSelect");
+
+capoSelect.addEventListener("change", () => {
+  const capoFret = parseInt(capoSelect.value);
+
+  const lyricsWithIntro = [
+    ...(currentSong.intro ? [`Intro: ${currentSong.intro}\n`] : []),
+    ...currentSong.chords
+  ];
+
+  // Transponemos al tono actual pero ignoramos capo para el tono
+  const transposed = transpose(lyricsWithIntro, originalTone, currentTone, true);
+
+  // Aplicamos capo solo a los acordes para visualización
+  const capoApplied = applyCapo(transposed, capoFret, currentTone);
+
+  // Renderizamos
+  renderLyrics(capoApplied);
+
+  // ✅ NO cambiamos currentTone ni toneValue
+});
+
+async function loadAuthorPhoto(author) {
+  try {
+    const res = await fetch("fotos.json"); // tu JSON con fotos
+    const photos = await res.json();
+    
+    // buscar coincidencia exacta por nombre
+    const autor = photos.find(a => a.nombre.toLowerCase() === (author || "").toLowerCase());
+    
+    const authorImg = document.getElementById("authorPhoto");
+    const authorName = document.getElementById("authorName");
+
+    authorName.innerText = author || "Desconocido";
+
+    if (autor) {
+      authorImg.src = autor.foto;
+      authorImg.style.display = "inline-block";
+    } else {
+      authorImg.style.display = "none";
+    }
+  } catch(e) {
+    console.error("Error cargando foto del autor:", e);
+  }
+}
 
 // Intentar seleccionar la opción equivalente si song.tone está en bemol (Ej Ebm -> D#m/Em mapping)
 function findEquivalentOption(tone) {

@@ -213,17 +213,324 @@
     #confirmModal h3 { color: #d63031; }
     #confirmModal p { color: #555; font-size: 0.9rem; }
     footer { text-align: center; padding: 20px; color: #777; }
+	
+	/* --- GRIDS ADAPTATIVOS PARA PC --- */
+@media (min-width: 769px) {
+  .albums {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    max-width: 1200px;
+    gap: 25px;
+  }
+  .album {
+    min-height: 180px;
+    padding: 25px 15px;
+    border-radius: 20px;
+    transition: transform 0.3s, box-shadow 0.3s;
+    box-shadow: 0 6px 25px rgba(0,0,0,0.08);
+  }
+  .album:hover {
+    transform: scale(1.08);
+    box-shadow: 0 10px 35px rgba(0,0,0,0.12);
+  }
+  .song-card {
+    border-radius: 15px;
+    padding: 18px 25px;
+    margin-bottom: 15px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  .song-card:hover {
+    transform: scale(1.04);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+  }
+  .song-card img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+  }
+}
+
+/* --- EFECTO GLASS SUAVE PARA HEADER Y MODALES EN PC --- */
+@media (min-width: 769px) {
+  header {
+    backdrop-filter: blur(6px);
+    background: rgba(0, 119, 182, 0.85);
+  }
+  .modal-content {
+    backdrop-filter: blur(8px);
+    background: rgba(255,255,255,0.9);
+  }
+}
+
+/* --- TRANSICIONES SUAVES EN BOTONES --- */
+button, .album, .search-container button {
+  transition: all 0.3s ease;
+}
+
+/* --- OPCIONAL: destacar álbum crear en PC --- */
+.album.add {
+  border: 2px dashed #0077b6;
+  background: rgba(224, 247, 255, 0.6);
+}
+
+	/* --- LETRA MÁS GRANDE EN PC --- */
+@media (min-width: 769px) {
+  /* Álbumes */
+  .album-name {
+    font-size: 1.2rem; /* antes 1rem */
+  }
+  .album-icon {
+    font-size: 2.5rem; /* antes 2rem */
+  }
+
+  /* Canciones */
+  .song-title {
+    font-size: 1.25rem; /* antes 1.1rem */
+  }
+  .song-tone, .song-author {
+    font-size: 1rem; /* antes 0.9rem */
+  }
+
+  /* Buscar input */
+  .search-container input {
+    font-size: 1.1rem;
+  }
+
+  /* Botón buscar */
+  .search-container button {
+    font-size: 1.2rem;
+    width: 46px;
+    height: 46px;
+  }
+}
+
+/* ======== MENÚ LATERAL (MÓVIL) ======== */
+.menu-btn {
+  font-size: 1.8rem;
+  cursor: pointer;
+  color: white;
+  background: rgba(255,255,255,0.2);
+  padding: 8px 12px;
+  border-radius: 10px;
+  transition: 0.3s;
+}
+
+.menu-btn:hover {
+  background: rgba(255,255,255,0.3);
+}
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: -250px;
+  width: 220px;
+  height: 100%;
+  background: linear-gradient(180deg, #0077b6, #00b4d8);
+  color: white;
+  transition: left 0.3s ease;
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  padding-top: 70px;
+}
+
+.sidebar a {
+  text-decoration: none;
+  color: white;
+  padding: 15px 20px;
+  font-size: 1rem;
+  border-bottom: 1px solid rgba(255,255,255,0.2);
+  transition: background 0.3s;
+}
+
+.sidebar a:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+.sidebar.active {
+  left: 0;
+}
+
+/* ======== MENÚ SUPERIOR (PC) ======== */
+.topbar {
+  display: none;
+}
+
+@media (min-width: 769px) {
+  .menu-btn, .sidebar {
+    display: none;
+  }
+
+  .topbar {
+    display: flex;
+    gap: 25px;
+    background: linear-gradient(90deg, #0077b6, #00b4d8);
+    padding: 10px 20px;
+    border-radius: 0 0 15px 15px;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .topbar a {
+    text-decoration: none;
+    color: white;
+    font-weight: 500;
+    transition: color 0.3s;
+  }
+
+  .topbar a:hover {
+    color: #f0f0f0;
+  }
+}
+
   </style>
 </head>
 <body>
 <header>
-  <h1>🎵 Min. Roca Fuerte</h1>
+  <div class="menu-btn" id="menuBtn">🎵</div>
+  <h1>NotaClave</h1>
   <div class="profile" id="profileIcon">👤</div>
   <div class="profile-menu" id="profileMenu">
     <button id="showEmail">Mi perfil</button>
     <button id="logoutBtn">Cerrar sesión</button>
   </div>
+
+  <!-- 🔹 Menú superior (solo PC) -->
+  <nav class="topbar">
+    <a href="perfil.html">Perfil</a>
+    <a href="abecedario.html">A - Z</a>
+    <a href="favoritos.html">Favoritos</a>
+    <a href="perfil.html">Perfil</a>
+  </nav>
 </header>
+
+<!-- 🔹 Menú lateral (solo móvil) -->
+<aside class="sidebar" id="sidebar">
+  <a href="perfil.html">Perfil</a>
+  <a href="abecedario.html">A - Z</a>
+  <a href="favoritos.html">Favoritos</a>
+  <a href="perfil.html">Perfil</a>
+</aside>
+
+<style>
+/* ----- ENCABEZADO GENERAL ----- */
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(90deg, #4da8d5, #358fbe, #2a78a6);
+  color: #fff;
+  padding: 12px 18px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+h1 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  margin: 0;
+}
+
+/* ----- MENÚ SUPERIOR (PC) ----- */
+.topbar {
+  display: flex;
+  gap: 20px;
+}
+.topbar a {
+  color: #eefaff;
+  text-decoration: none;
+  font-weight: 500;
+  transition: 0.2s;
+}
+.topbar a:hover {
+  color: #bce6fa;
+}
+
+/* ----- MENÚ HAMBURGUESA ----- */
+.menu-btn {
+  cursor: pointer;
+  font-size: 1.6rem;
+  margin-right: 15px;
+  z-index: 10000;
+  position: relative;
+  color: #eefaff;
+  transition: transform 0.2s;
+}
+.menu-btn:active {
+  transform: scale(0.9);
+}
+
+/* ----- SIDEBAR (MÓVIL) ----- */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: -260px;
+  width: 230px;
+  height: 100%;
+  background: linear-gradient(180deg, #3f9ac8, #2f7da9, #255f85);
+  backdrop-filter: blur(8px);
+  display: flex;
+  flex-direction: column;
+  padding: 70px 20px;
+  gap: 20px;
+  transition: all 0.35s ease;
+  z-index: 9998;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.25);
+}
+
+.sidebar a {
+  color: #f1fbff;
+  text-decoration: none;
+  font-size: 1.1rem;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+.sidebar a:hover {
+  color: #aee4ff;
+}
+
+.sidebar.active {
+  left: 0;
+}
+
+/* 🔹 Solo mostrar menú hamburguesa en móvil */
+@media (min-width: 768px) {
+  .menu-btn { display: none; }
+  .sidebar { display: none; }
+  .topbar { display: flex; }
+}
+
+/* 🔹 En móvil, ocultar topbar */
+@media (max-width: 767px) {
+  .topbar { display: none; }
+  .menu-btn { display: block; }
+}
+</style>
+
+<script>
+const menuBtn = document.getElementById("menuBtn");
+const sidebar = document.getElementById("sidebar");
+
+menuBtn.addEventListener("click", (e) => {
+  e.stopPropagation();
+  sidebar.classList.toggle("active");
+});
+
+document.addEventListener("click", (e) => {
+  if (!sidebar.contains(e.target) && !menuBtn.contains(e.target)) {
+    sidebar.classList.remove("active");
+  }
+});
+</script>
+
 
 <div class="search-container">
   <input type="text" id="searchInput" placeholder="Buscar canciones...">
@@ -255,7 +562,7 @@
     <div>
       <button class="create-btn" id="yesDelete">Sí, eliminar</button>
       <button class="cancel-btn" id="noDelete">Cancelar</button>
-    </div>
+    </div>let songs
   </div>
 </div>
 
@@ -295,6 +602,8 @@ let currentUserId = "";
 let currentUserData = {};
 let albumToDelete = null;
 let songs = [];
+let authorsPhotos = {}; // mapa de autor -> foto
+
 
 profileIcon.addEventListener("click", () => profileMenu.classList.toggle("active"));
 logoutBtn.addEventListener("click", async () => {
@@ -387,10 +696,23 @@ yesDelete.addEventListener("click", async () => {
   loadUserAlbums(currentUserId);
 });
 
-async function loadSongs() {
-  const res = await fetch("songs.json");
-  songs = await res.json();
+async function loadSongsAndPhotos() {
+  // Cargar canciones
+  const resSongs = await fetch("songs.json");
+  songs = await resSongs.json();
+
+  // Cargar fotos de autores
+  const resPhotos = await fetch("fotos.json");
+  const photos = await resPhotos.json();
+  authorsPhotos = {};
+  photos.forEach(p => {
+    authorsPhotos[normalize(p.nombre)] = p.foto;
+  });
 }
+
+// Llamamos a la función
+loadSongsAndPhotos();
+
 
 function normalize(s) {
   return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
@@ -441,19 +763,30 @@ function searchSongs() {
   });
 
   // Mostrar resultados de autores
-  Object.entries(authorsMap).forEach(([author, count]) => {
-    const div = document.createElement("div");
-    div.className = "song-card";
-    div.style.background = "#e8f7ff";
-    div.innerHTML = `
-      <div class='song-title'>👤 ${author}</div>
-      <div class='song-tone'>${count} canciones disponibles</div>
-    `;
-    div.addEventListener("click", () => {
-      window.location.href = `autores.html?autor=${encodeURIComponent(author)}`;
-    });
-    results.appendChild(div);
+// Mostrar resultados de autores con foto
+Object.entries(authorsMap).forEach(([author, count]) => {
+  const div = document.createElement("div");
+  div.className = "song-card";
+  div.style.background = "#e8f7ff";
+
+  const photoUrl = authorsPhotos[normalize(author)] || "default.jpg"; // si no hay foto, usa un placeholder
+
+  div.innerHTML = `
+    <div style="display:flex; align-items:center; gap:10px;">
+      <img src="${photoUrl}" alt="${author}" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">
+      <div>
+        <div class='song-title'>${author}</div>
+        <div class='song-tone'>${count} canciones disponibles</div>
+      </div>
+    </div>
+  `;
+
+  div.addEventListener("click", () => {
+    window.location.href = `autores.html?autor=${encodeURIComponent(author)}`;
   });
+  results.appendChild(div);
+});
+
 
   albumsDiv.style.display = "none";
   results.style.display = "block";
@@ -483,6 +816,26 @@ onAuthStateChanged(auth, async user => {
     window.location.href = "login.html";
   }
 });
+
+// --- MENÚ RESPONSIVE 🎵 ---
+// --- MENÚ RESPONSIVE 🎵 ---
+const menuBtn = document.getElementById("menuBtn");
+const sidebar = document.getElementById("sidebar");
+
+// Abrir/cerrar menú lateral
+menuBtn.addEventListener("click", (e) => {
+  e.stopPropagation(); // evita que se dispare el cierre inmediato
+  sidebar.classList.toggle("active");
+});
+
+// Cerrar al hacer clic fuera
+document.addEventListener("click", (e) => {
+  if (!sidebar.contains(e.target) && !menuBtn.contains(e.target)) {
+    sidebar.classList.remove("active");
+  }
+});
+
+
 </script>
 </body>
 </html>

@@ -3,71 +3,167 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mi Perfil</title>
+  <title>Mi Perfil | NotaClave</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    :root[data-tema="claro"] {
-      --bg: linear-gradient(180deg, #0077b6, #00b4d8);
-      --text: white;
-      --card: rgba(255, 255, 255, 0.1);
-      --btn-bg: white;
-      --btn-text: #0077b6;
-    }
-
-    :root[data-tema="oscuro"] {
-      --bg: linear-gradient(180deg, #121212, #1b1b1b);
-      --text: #f1f1f1;
-      --card: rgba(255, 255, 255, 0.08);
-      --btn-bg: #333;
-      --btn-text: #00b4d8;
-    }
+    * { box-sizing: border-box; }
 
     body {
-      background: var(--bg);
-      color: var(--text);
       font-family: 'Poppins', sans-serif;
-      text-align: center;
-      padding: 40px 15px;
-      transition: background 0.4s, color 0.4s;
+      background: linear-gradient(180deg, #00bfff, #0073cc);
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
     }
 
-    .perfil-container {
-      background: var(--card);
-      border-radius: 20px;
-      padding: 25px;
+    .perfil-container, .reset-container {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(12px);
+      border-radius: 25px;
+      padding: 35px 25px;
+      width: 100%;
       max-width: 380px;
-      margin: 0 auto;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-      animation: fadeIn 0.4s ease;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+      text-align: center;
+      animation: fadeIn 0.5s ease;
+      position: absolute;
+      transition: all 0.4s ease;
     }
+
+    .foto-perfil {
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #fff;
+      margin-bottom: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      transition: 0.3s;
+    }
+
+    .foto-perfil:hover { transform: scale(1.05); }
 
     h1 {
-      margin-bottom: 20px;
-      font-size: 1.6em;
+      margin: 5px 0;
+      font-size: 1.8rem;
+      color: #fff;
+    }
+
+    p.correo {
+      color: #dff3ff;
+      font-size: 0.95rem;
+      margin-bottom: 25px;
     }
 
     .dato {
-      background: rgba(255,255,255,0.1);
-      border-radius: 10px;
-      margin: 8px 0;
-      padding: 10px;
+      background: rgba(255,255,255,0.12);
+      border-radius: 12px;
+      margin: 10px 0;
+      padding: 12px;
       font-size: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .dato i {
+      font-size: 1.2rem;
+      color: #ffd166;
     }
 
     .btn {
-      margin-top: 12px;
-      background: var(--btn-bg);
-      color: var(--btn-text);
+      margin-top: 15px;
+      background: #fff;
+      color: #0073cc;
       border: none;
-      border-radius: 8px;
-      padding: 10px 18px;
+      border-radius: 12px;
+      padding: 12px 20px;
       font-weight: 600;
       cursor: pointer;
+      width: 100%;
+      font-size: 1rem;
       transition: 0.3s;
     }
 
     .btn:hover {
-      opacity: 0.9;
+      background: #e6f4ff;
+      transform: scale(1.03);
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 25px;
+      color: #d0e8ff;
+      font-size: 0.85rem;
+    }
+
+    /* Reset contraseña */
+    .reset-container {
+      display: none; /* 🔹 OCULTAR COMPLETAMENTE AL INICIO */
+      opacity: 0;
+      transform: translateY(40px);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .reset-container.visible {
+      display: block; /* 🔹 SE MUESTRA SOLO AL ACTIVARSE */
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+      z-index: 2;
+    }
+
+    .reset-container h2 {
+      font-size: 1.4rem;
+      margin-bottom: 10px;
+    }
+
+    .reset-container p {
+      color: #e3f8ff;
+      font-size: 0.9rem;
+      margin-bottom: 15px;
+    }
+
+    .reset-container input {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      font-size: 1rem;
+      outline: none;
+    }
+
+    /* Mensaje flotante */
+    .mensaje {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-20px);
+      background: rgba(0,255,170,0.15);
+      border: 1px solid #00ffbb;
+      color: #e1fff8;
+      padding: 12px 24px;
+      border-radius: 12px;
+      font-size: 1rem;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      opacity: 0;
+      transition: all 0.5s ease;
+      z-index: 9999;
+      pointer-events: none;
+    }
+
+    .mensaje.visible {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
     }
 
     @keyframes fadeIn {
@@ -75,87 +171,124 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    .input-group {
-      display: flex;
-      flex-direction: column;
-      align-items: start;
-      margin: 10px 0;
-      text-align: left;
+    @media (max-width: 480px) {
+      .perfil-container, .reset-container {
+        padding: 30px 20px;
+      }
+      h1 { font-size: 1.5rem; }
     }
 
-    .input-group input {
-      width: 100%;
-      padding: 8px;
-      border: none;
-      border-radius: 8px;
-      margin-top: 5px;
+    .oculto {
+      opacity: 0;
+      transform: translateY(-50px);
+      pointer-events: none;
     }
-
   </style>
 </head>
 <body>
-  <div class="perfil-container">
-    <h1>👤 Mi Perfil</h1>
+  <div class="mensaje" id="mensajeFlotante"></div>
+
+  <!-- PERFIL -->
+  <div class="perfil-container" id="perfilCard">
+    <img id="fotoPerfil" class="foto-perfil" src="https://cdn-icons-png.flaticon.com/512/1077/1077012.png" alt="Foto de perfil">
+    <h1 id="nombrePerfil">Usuario miembro de NotaClave</h1>
+    <p class="correo" id="correoPerfil">correo@ejemplo.com</p>
+
     <div id="perfilDatos">
-      <div class="dato">Cargando datos...</div>
+      <div class="dato"><i>🔒</i> Contraseña: ******</div>
     </div>
 
-    <button class="btn" id="temaBtn">🌙 Cambiar a tema oscuro</button>
-    <button class="btn" id="resetPassBtn">🔒 Restablecer contraseña</button>
+    <button class="btn" id="resetPassBtn">🔑 Restablecer contraseña</button>
     <button class="btn" id="volverBtn">⬅ Volver al inicio</button>
+
+    <footer>© 2025 - NotaClave 🎶</footer>
+  </div>
+
+  <!-- RESETEAR -->
+  <div class="reset-container" id="resetCard">
+    <h2>Restablecer contraseña</h2>
+    <p>Ingresa tu correo registrado para enviarte un enlace de recuperación.</p>
+    <input type="email" id="resetEmail" placeholder="Tu correo electrónico" required>
+    <button class="btn" id="enviarResetBtn">Enviar enlace</button>
+    <button class="btn" id="volverPerfilBtn">⬅ Volver</button>
   </div>
 
   <script>
-    // Aplicar tema guardado
-    const temaGuardado = localStorage.getItem("tema") || "claro";
-    document.documentElement.setAttribute("data-tema", temaGuardado);
+    const perfilCard = document.getElementById("perfilCard");
+    const resetCard = document.getElementById("resetCard");
+    const resetPassBtn = document.getElementById("resetPassBtn");
+    const volverPerfilBtn = document.getElementById("volverPerfilBtn");
+    const enviarResetBtn = document.getElementById("enviarResetBtn");
+    const mensajeFlotante = document.getElementById("mensajeFlotante");
 
-    const perfilDatos = document.getElementById("perfilDatos");
-    const temaBtn = document.getElementById("temaBtn");
-
-    // Mostrar datos guardados
     const usuario = JSON.parse(localStorage.getItem("perfilUsuario"));
+    const fotoPerfil = document.getElementById("fotoPerfil");
+    const nombrePerfil = document.getElementById("nombrePerfil");
+    const correoPerfil = document.getElementById("correoPerfil");
+    const perfilDatos = document.getElementById("perfilDatos");
 
     if (usuario) {
-      perfilDatos.innerHTML = `
-        <div class="dato"><b>Nombre:</b> ${usuario.nombre}</div>
-        <div class="dato"><b>Correo:</b> ${usuario.email}</div>
-        <div class="dato"><b>Contraseña:</b> ******</div>
-      `;
+      nombrePerfil.textContent = usuario.nombre || "Usuario miembro de NotaClave";
+      correoPerfil.textContent = usuario.email || "correo@ejemplo.com";
+      if (usuario.foto) fotoPerfil.src = usuario.foto;
+      perfilDatos.innerHTML = `<div class="dato"><i>🔒</i> Contraseña: ******</div>`;
     } else {
-      perfilDatos.innerHTML = "<div class='dato'>Usuario no autenticado.</div>";
+      perfilDatos.innerHTML = "<div class='dato'><i>⚠️</i> Usuario no autenticado.</div>";
     }
 
-    // Botón volver
-    document.getElementById("volverBtn").addEventListener("click", () => {
-      window.location.href = "index.html";
+    // Mostrar formulario de restablecer
+    resetPassBtn.addEventListener("click", () => {
+      perfilCard.classList.add("oculto");
+      setTimeout(() => {
+        perfilCard.style.display = "none";
+        resetCard.style.display = "block";
+        setTimeout(() => resetCard.classList.add("visible"), 50);
+      }, 300);
     });
 
-    // Cambiar tema
-    temaBtn.addEventListener("click", () => {
-      const temaActual = document.documentElement.getAttribute("data-tema");
-      const nuevoTema = temaActual === "claro" ? "oscuro" : "claro";
-      document.documentElement.setAttribute("data-tema", nuevoTema);
-      localStorage.setItem("tema", nuevoTema);
-      temaBtn.textContent = nuevoTema === "oscuro" ? "☀ Cambiar a tema claro" : "🌙 Cambiar a tema oscuro";
+    // Volver al perfil
+    volverPerfilBtn.addEventListener("click", () => {
+      resetCard.classList.remove("visible");
+      setTimeout(() => {
+        resetCard.style.display = "none";
+        perfilCard.style.display = "block";
+        setTimeout(() => perfilCard.classList.remove("oculto"), 50);
+      }, 300);
     });
 
-    // Mostrar texto del botón según el tema
-    if (temaGuardado === "oscuro") {
-      temaBtn.textContent = "☀ Cambiar a tema claro";
+    // Mostrar mensaje flotante
+    function mostrarMensaje(texto, tipo = "ok") {
+      mensajeFlotante.textContent = texto;
+      mensajeFlotante.style.background = tipo === "error"
+        ? "rgba(255,0,0,0.2)"
+        : "rgba(0,255,170,0.15)";
+      mensajeFlotante.style.border = tipo === "error"
+        ? "1px solid #ff6666"
+        : "1px solid #00ffbb";
+
+      mensajeFlotante.classList.add("visible");
+      setTimeout(() => mensajeFlotante.classList.remove("visible"), 3500);
     }
 
-    // Restablecer contraseña (simulado)
-    document.getElementById("resetPassBtn").addEventListener("click", () => {
-      if (!usuario) {
-        alert("Debes iniciar sesión primero.");
+    // Enviar enlace
+    enviarResetBtn.addEventListener("click", () => {
+      const email = document.getElementById("resetEmail").value.trim();
+      if (!email) {
+        mostrarMensaje("⚠️ Por favor, ingresa tu correo electrónico.", "error");
         return;
       }
 
-      const confirmar = confirm(`¿Quieres restablecer la contraseña del correo ${usuario.email}?`);
-      if (confirmar) {
-        alert("🔗 Se ha enviado un enlace de restablecimiento a tu correo.");
-      }
+      mostrarMensaje(`🔗 Se ha enviado un enlace de restablecimiento a ${email}`);
+      document.getElementById("resetEmail").value = "";
+
+      setTimeout(() => {
+        volverPerfilBtn.click();
+      }, 1200);
+    });
+
+    // Volver al inicio
+    document.getElementById("volverBtn").addEventListener("click", () => {
+      window.location.href = "index.html";
     });
   </script>
 </body>

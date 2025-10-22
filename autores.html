@@ -52,14 +52,30 @@
     .author-info {
       text-align: center;
       margin: 30px 15px 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
     }
+    .author-info img {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 4px solid #0077b6;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+      transition: 0.3s;
+    }
+    .author-info img:hover { transform: scale(1.05); }
     .author-info h2 {
       color: #0077b6;
-      margin-bottom: 5px;
+      margin: 0;
+      font-size: 1.5rem;
     }
     .author-info p {
       color: #555;
       font-size: 0.95rem;
+      margin: 0;
     }
 
     .search-container {
@@ -98,7 +114,7 @@
       margin: 20px auto 40px;
       padding: 0 15px;
       display: grid;
-      grid-template-columns: 1fr;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 15px;
     }
 
@@ -109,6 +125,9 @@
       box-shadow: 0 3px 12px rgba(0,0,0,0.08);
       cursor: pointer;
       transition: 0.25s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
     }
     .song-card:hover {
       transform: translateY(-3px);
@@ -124,7 +143,6 @@
     .song-tone {
       color: #555;
       font-size: 0.9rem;
-      margin-top: 4px;
     }
 
     footer {
@@ -137,6 +155,7 @@
     @media (max-width: 600px) {
       header h1 { font-size: 1.1rem; }
       .song-card { padding: 15px; }
+      .author-info img { width: 100px; height: 100px; }
     }
   </style>
 </head>
@@ -169,7 +188,6 @@ async function loadAuthorSongs() {
   const params = new URLSearchParams(window.location.search);
   const author = params.get("autor");
   const authorInfo = document.getElementById("authorInfo");
-  const songList = document.getElementById("songList");
   const pageTitle = document.getElementById("pageTitle");
 
   if (!author) {
@@ -178,18 +196,32 @@ async function loadAuthorSongs() {
   }
 
   try {
-    const res = await fetch("songs.json");
-    const songs = await res.json();
+    const [songsRes, photosRes] = await Promise.all([
+      fetch("songs.json"),
+      fetch("fotos.json")
+    ]);
+    const songs = await songsRes.json();
+    const photos = await photosRes.json();
 
     authorSongs = songs.filter(s => s.autor && s.autor.toLowerCase() === author.toLowerCase());
 
+    // Buscar la foto por nombre en fotos.json
+    const authorPhotoObj = photos.find(p => p.nombre.toLowerCase() === author.toLowerCase());
+    const authorPhoto = authorPhotoObj ? authorPhotoObj.foto : "";
+
+    pageTitle.textContent = author;
+
     if (!authorSongs.length) {
-      authorInfo.innerHTML = `<h2>${author}</h2><p>No se encontraron canciones registradas.</p>`;
+      authorInfo.innerHTML = `
+        ${authorPhoto ? `<img src="${authorPhoto}" alt="${author}">` : ""}
+        <h2>${author}</h2>
+        <p>No se encontraron canciones registradas.</p>
+      `;
       return;
     }
 
-    pageTitle.textContent = author;
     authorInfo.innerHTML = `
+      ${authorPhoto ? `<img src="${authorPhoto}" alt="${author}">` : ""}
       <h2>${author}</h2>
       <p>${authorSongs.length} canciones encontradas</p>
     `;
@@ -218,7 +250,7 @@ function displaySongs(list) {
   });
 }
 
-// 🔍 Buscar dentro del autor
+// Buscar canciones
 document.getElementById("searchBtn").addEventListener("click", filterSongs);
 document.getElementById("searchInput").addEventListener("input", filterSongs);
 
@@ -235,6 +267,7 @@ function filterSongs() {
   displaySongs(filtered);
 }
 
+// Botón volver
 document.getElementById("backBtn").addEventListener("click", () => {
   window.history.back();
 });
