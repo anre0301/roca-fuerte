@@ -15,41 +15,37 @@
     "nombre": "Ebenezer",
     "foto": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS963SF4m6Wa9Kg9WGdacJJfrgIJ93q8d2sqQ&s"
   },
-    {
+  {
     "nombre": "Danilo Montero",
     "foto": "https://i.scdn.co/image/ab6761610000e5eb655614720a609045e3210ff1"
   },
-    {
+  {
     "nombre": "Omar Oropesa",
     "foto": "https://akamai.sscdn.co/uploadfile/letras/fotos/d/6/a/8/d6a8471b9797fb88e1812d1161e7576e.jpg"
   },
-    {
+  {
     "nombre": "Jesús Adrián Romero",
     "foto": "https://artist99.cdn107.com/bbf/bbf83f4b23a5fbb7ee0533ff75106bf8_xl.jpg"
   },
-    {
+  {
     "nombre": "Juan Carlos Alvarado",
     "foto": "https://cdn-images.dzcdn.net/images/artist/77bda4e0f3b5779da25903effd63bc84/1900x1900-000000-80-0-0.jpg"
   },
-    {
+  {
     "nombre": "Julio Melgar",
     "foto": "https://akamai.sscdn.co/uploadfile/letras/fotos/9/8/5/5/98558f311750b69c9c9e7ec3db94c84a.jpg"
   },
-    {
+  {
     "nombre": "Hillsong United",
     "foto": "https://i8.amplience.net/i/naras/hillsong-worship_MI0004723224-MN0001084567"
   },
-   {
+  {
     "nombre": "Adoración La IBI",
     "foto": "https://akamai.sscdn.co/uploadfile/letras/fotos/1/4/2/3/14232b09a1881757bf2b083a97b1c06a.jpg"
   },
   {
     "nombre": "Socorro",
     "foto": "https://yt3.googleusercontent.com/X9xlIZYCImj74LzdZOoBtrEc6hiYMytleMHihSYqwwnxP-Q5gVkysYZKU-czcegPMr4CSOoRdg=s900-c-k-c0x00ffffff-no-rj"
-  },
-  {
-    "nombre": "Adoración La IBI",
-    "foto": "https://akamai.sscdn.co/uploadfile/letras/fotos/1/4/2/3/14232b09a1881757bf2b083a97b1c06a.jpg"
   },
   {
     "nombre": "Danny Berrios",
@@ -66,5 +62,9 @@
   {
     "nombre": "Gateway Worship",
     "foto": "https://images.squarespace-cdn.com/content/v1/639a2596d4e75765c87e82ed/24f06323-ae1a-4475-b64a-1264e221cbf2/2024GWWTeamPhoto1_WebRes.jpg"
+  },
+  {
+    "nombre": "Daniel Calveti",
+    "foto": "https://directorcreativo.s3.amazonaws.com/wp-content/uploads/2021/06/14113538/Daniel_Calveti_En_Paz_tumblr.jpeg"
   }
 ]
