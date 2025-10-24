@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Guía de Capo | NotaClave</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(180deg, #5fb4d7, #3c8fba, #2b6d93);
+  color: #fff;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: 50px;
+}
+
+header {
+  width: 100%;
+  text-align: center;
+  padding: 15px 0;
+  background: linear-gradient(90deg, #4da8d5, #358fbe, #2a78a6);
+  box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+  font-size: 1.7rem;
+  font-weight: 600;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.back-btn {
+  position: fixed;
+  top: 15px;
+  left: 15px;
+  background: rgba(255,255,255,0.2);
+  border: none;
+  color: #fff;
+  font-size: 1.3rem;
+  padding: 8px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.3s;
+  z-index: 100;
+}
+.back-btn:hover {
+  background: rgba(255,255,255,0.3);
+  transform: scale(1.05);
+}
+
+.container {
+  background: rgba(255,255,255,0.1);
+  border-radius: 25px;
+  padding: 35px 25px;
+  width: 95%;
+  max-width: 480px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+  margin-top: 30px;
+  text-align: center;
+}
+
+h2 {
+  margin-bottom: 20px;
+  font-size: 1.6rem;
+  color: #e8faff;
+}
+
+.select-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+label {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+select {
+  background: rgba(0, 0, 0, 0.3); /* fondo oscuro semitransparente */
+  color: #fff;                    /* texto blanco */
+  border: none;
+  padding: 12px;
+  border-radius: 12px;
+  font-size: 1rem;
+  backdrop-filter: blur(5px);
+  cursor: pointer;
+  transition: 0.3s;
+}
+select:hover { 
+  background: rgba(0, 0, 0, 0.5); /* más visible al pasar el mouse */
+}
+
+button {
+  background: #fff;
+  color: #2a78a6;
+  border: none;
+  border-radius: 14px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  padding: 12px 25px;
+  cursor: pointer;
+  transition: 0.3s;
+  margin-top: 10px;
+}
+button:hover { background: #dff6ff; transform: scale(1.05); }
+
+#resultado {
+  margin-top: 25px;
+  background: rgba(255,255,255,0.15);
+  padding: 15px;
+  border-radius: 15px;
+  color: #fff;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+table {
+  margin: 20px auto 0 auto;
+  border-collapse: collapse;
+  width: 100%;
+  max-width: 440px;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+td, th {
+  border: 1px solid rgba(255,255,255,0.3);
+  padding: 10px;
+  text-align: center;
+  font-weight: 500;
+  transition: 0.2s;
+}
+th {
+  background: rgba(0,245,212,0.3);
+  font-weight: 600;
+}
+
+td:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+footer {
+  margin-top: 30px;
+  text-align: center;
+  font-size: 0.9rem;
+  color: #cceeff;
+}
+
+@media (max-width: 480px) {
+  .container { padding: 25px 15px; }
+  h2 { font-size: 1.4rem; }
+  select { font-size: 0.95rem; }
+  button { font-size: 1rem; padding: 10px 18px; }
+  td, th { padding: 8px; font-size: 0.9rem; }
+}
+
+
+</style>
+</head>
+<body>
+
+<button class="back-btn" onclick="window.location.href='herramientas.html'">⬅</button>
+<header>Guía de Capo</header>
+
+<div class="container">
+  <h2>Transponer con Capo</h2>
+  <div class="select-group">
+    <label for="originalTone">Tono Original:</label>
+    <select id="originalTone"></select>
+  </div>
+  <div class="select-group">
+    <label for="targetTone">Tono Deseado:</label>
+    <select id="targetTone"></select>
+  </div>
+  <button id="calcBtn">Calcular Capo</button>
+
+  <div id="resultado"></div>
+  <table id="tablaNotas"></table>
+</div>
+
+<footer>© 2025 NotaClave | Guía de Capo 🎶</footer>
+
+<script>
+const tones = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+const originalTone = document.getElementById('originalTone');
+const targetTone = document.getElementById('targetTone');
+
+tones.forEach(t => {
+  const o = document.createElement('option'); o.value=t; o.textContent=t; originalTone.appendChild(o);
+  const tOpt = document.createElement('option'); tOpt.value=t; tOpt.textContent=t; targetTone.appendChild(tOpt);
+});
+originalTone.value = 'C';
+targetTone.value = 'C';
+
+document.getElementById('calcBtn').addEventListener('click',()=>{
+  const original = originalTone.value;
+  const target = targetTone.value;
+  const originalIndex = tones.indexOf(original);
+  const targetIndex = tones.indexOf(target);
+  let capoTraste = targetIndex - originalIndex;
+  if(capoTraste < 0) capoTraste += 12;
+  document.getElementById('resultado').innerHTML = `Coloca el capo en el traste: <strong>${capoTraste}</strong>`;
+
+  // Tabla de notas transpuestas
+  const tabla = document.getElementById('tablaNotas');
+  tabla.innerHTML = "<tr><th>Original</th><th>Transpuesta</th></tr>";
+  tones.forEach((note,i)=>{
+    let newIndex = (i + capoTraste) % 12;
+    tabla.innerHTML += `<tr><td>${note}</td><td>${tones[newIndex]}</td></tr>`;
+  });
+});
+</script>
+
+</body>
+</html>
