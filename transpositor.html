@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Transpositor — NotaClave</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --fondo1:#f3fbff; --fondo2:#dff3ff;
+      --acento:#00aaff; --acento2:#006fd6;
+      --blanco:rgba(255,255,255,0.98);
+      --muted:#6c7b87;
+      --ok:#00c776; --bad:#ff6868;
+      --radio:12px; --sombra: 0 6px 20px rgba(16,24,40,0.06);
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%;font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;background:linear-gradient(180deg,var(--fondo1),var(--fondo2));color:#0b2540}
+    .wrap{max-width:1100px;margin:20px auto;padding:18px}
+
+    header{
+      background:linear-gradient(90deg,var(--acento),var(--acento2));
+      color:#fff;padding:14px 18px;border-radius:var(--radio);box-shadow:var(--sombra);
+      display:flex;align-items:center;justify-content:space-between;gap:12px;
+    }
+    header a.back{color:#fff;text-decoration:none;font-weight:700}
+    header h1{font-size:1.12rem;margin:0;font-weight:700}
+
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:18px;margin-top:18px}
+    @media(max-width:920px){.grid{grid-template-columns:1fr}}
+
+    .panel{background:var(--blanco);border-radius:var(--radio);padding:16px;box-shadow:var(--sombra)}
+    .muted{color:var(--muted)}
+    .row{display:flex;gap:10px;align-items:center}
+    .controls{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+
+    button.btn{
+      background:linear-gradient(90deg,var(--acento),var(--acento2));
+      color:#fff;border:0;padding:10px 12px;border-radius:10px;font-weight:700;cursor:pointer;
+    }
+    button.ghost{background:transparent;color:var(--muted);border:1px solid rgba(0,0,0,0.06)}
+    button.secondary{background:#fff;color:var(--acento);border:1px solid rgba(0,120,200,0.08)}
+    button.small{padding:8px 10px;font-size:0.95rem}
+
+    textarea{width:100%;min-height:200px;padding:12px;border-radius:10px;border:1px solid rgba(0,0,0,0.06);font-family:inherit;font-size:1rem;resize:vertical}
+    pre.output{white-space:pre-wrap;background:#fbfeff;padding:12px;border-radius:10px;border:1px dashed rgba(0,0,0,0.04);min-height:120px}
+
+    label{font-weight:700;margin-right:6px}
+    select,input[type="number"]{padding:8px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);background:transparent;font-weight:700}
+
+    .kbd{font-family:monospace;background:#fff;border:1px solid rgba(0,0,0,0.04);padding:4px 6px;border-radius:6px;font-weight:700}
+
+    .help{font-size:0.92rem;color:var(--muted);margin-top:10px}
+
+    .center{display:flex;align-items:center;justify-content:center;gap:8px}
+
+    footer{margin-top:12px;text-align:center;color:var(--muted);font-size:0.9rem}
+
+    .note-pill{display:inline-block;padding:6px 8px;border-radius:999px;background:#f5faff;border:1px solid rgba(0,110,200,0.06);font-weight:700}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <a href="herramientas.html" class="back">← Volver</a>
+      <h1>Transpositor</h1>
+    </header>
+
+    <div class="grid">
+      <!-- LEFT: main tools -->
+      <main class="panel" aria-label="Transpositor principal">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div style="font-weight:700">Entrada</div>
+          <div class="muted">Pega tus acordes o escribe progresiones</div>
+        </div>
+
+        <div style="margin-top:10px">
+          <textarea id="inputText" placeholder="Ejemplo:
+A    D    E
+G  Em  C
+Cmaj7  F#dim  Bm"></textarea>
+        </div>
+
+        <div class="controls" style="margin-top:12px">
+          <button id="downBtn" class="btn small">-1 semitono</button>
+          <button id="upBtn" class="btn small">+1 semitono</button>
+
+          <div class="row" style="align-items:center">
+            <label for="steps">Semitonos</label>
+            <input id="steps" type="number" value="0" min="-24" max="24" style="width:80px">
+          </div>
+
+          <div class="row" style="align-items:center">
+            <label for="direction">Dirección</label>
+            <select id="direction">
+              <option value="up">Subir</option>
+              <option value="down">Bajar</option>
+            </select>
+          </div>
+
+          <button id="applyBtn" class="secondary">Aplicar</button>
+        </div>
+
+        <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">
+          <div>
+            <label for="fromKey">Desde (opcional)</label><br>
+            <select id="fromKey">
+              <option value="">-- (auto) --</option>
+              <option>A</option><option>A#</option><option>Bb</option><option>B</option><option>C</option><option>C#</option><option>Db</option>
+              <option>D</option><option>D#</option><option>Eb</option><option>E</option><option>F</option><option>F#</option><option>Gb</option>
+              <option>G</option><option>G#</option><option>Ab</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="toKey">A (opcional)</label><br>
+            <select id="toKey">
+              <option value="">-- (usar semitonos) --</option>
+              <option>A</option><option>A#</option><option>Bb</option><option>B</option><option>C</option><option>C#</option><option>Db</option>
+              <option>D</option><option>D#</option><option>Eb</option><option>E</option><option>F</option><option>F#</option><option>Gb</option>
+              <option>G</option><option>G#</option><option>Ab</option>
+            </select>
+          </div>
+
+          <div style="align-self:flex-end">
+            <button id="detectBtn" class="ghost">Detectar tonalidad (básico)</button>
+          </div>
+        </div>
+
+        <div style="margin-top:14px">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div style="font-weight:700">Salida</div>
+            <div class="muted">Texto transpuesto</div>
+          </div>
+
+          <div style="margin-top:8px">
+            <pre id="output" class="output" aria-live="polite">—</pre>
+          </div>
+
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button id="copyBtn" class="btn small">Copiar</button>
+            <button id="downloadBtn" class="secondary small">Descargar .txt</button>
+            <div style="flex:1"></div>
+            <div class="muted">Atajo: <span class="kbd">M</span>=subir, <span class="kbd">N</span>=bajar</div>
+          </div>
+
+          <div class="help">Notas: el transpositor reconoce raíces con sostenidos (#) o bemoles (b), y preserva sufijos como m, maj7, sus4, /B, etc.</div>
+        </div>
+      </main>
+
+      <!-- RIGHT: reference -->
+      <aside class="panel" aria-label="Referencia">
+        <div style="font-weight:700">Referencia rápida</div>
+        <div style="margin-top:8px">
+          <div>Notas cromáticas (orden):</div>
+          <div style="margin-top:8px" class="note-pill">C → C# / Db → D → D# / Eb → E → F → F# / Gb → G → G# / Ab → A → A# / Bb → B</div>
+        </div>
+
+        <div style="margin-top:12px">
+          <div style="font-weight:700">Ejemplo</div>
+          <pre style="background:#fbfeff;padding:8px;border-radius:8px;margin-top:6px">A  D  E
+G  Em  C
+Bm  F#m  E</pre>
+        </div>
+
+        <div style="margin-top:12px">
+          <div style="font-weight:700">Cómo funciona</div>
+          <ol style="margin-top:8px;padding-left:18px;color:var(--muted)">
+            <li>Selecciona o pega acordes en la caja de entrada.</li>
+            <li>Elige cuántos semitonos subir o bajar (o usa A/N).</li>
+            <li>Presiona "Aplicar" y copia el resultado.</li>
+          </ol>
+        </div>
+
+        <div style="margin-top:12px" class="help">Limitaciones: parser simple — intenta mantener formatos comunes (Ej: <span class="kbd">Am</span>, <span class="kbd">Cmaj7</span>, <span class="kbd">D/F#</span>).</div>
+      </aside>
+    </div>
+
+    <footer>NotaClave · Transpositor</footer>
+  </div>
+
+  <script>
+    // ---------- UTILIDADES MUSICALES ----------
+    const CHROMATIC_SHARP = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+    const CHROMATIC_FLAT  = ['C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B'];
+    // map enharmonic: both names map to same index
+    const NAME_TO_INDEX = {
+      'C':0,'B#':0,
+      'C#':1,'Db':1,
+      'D':2,
+      'D#':3,'Eb':3,
+      'E':4,'Fb':4,
+      'F':5,'E#':5,
+      'F#':6,'Gb':6,
+      'G':7,
+      'G#':8,'Ab':8,
+      'A':9,
+      'A#':10,'Bb':10,
+      'B':11,'Cb':11
+    };
+
+    function normalizeNoteName(name){
+      // remove weird whitespace
+      return name.trim().replace(/\u2217/g,'*');
+    }
+
+    function indexToName(idx, preferSharps=true){
+      idx = ((idx % 12) + 12) % 12;
+      return preferSharps ? CHROMATIC_SHARP[idx] : CHROMATIC_FLAT[idx];
+    }
+
+    function parseChordToken(token){
+      // Token examples: "C", "Am", "G7", "D/F#", "Cmaj7", "Bb", "F#sus4"
+      // We'll detect root, optional slash-bass, and suffix
+      // Regex approach:
+      // root note: ^([A-Ga-g])([#b]?)(.*)$  but careful with slash.
+      token = token.trim();
+      if (!token) return null;
+      // split bass if present
+      let [main, bass] = token.split('/');
+      main = main || '';
+      bass = bass ? bass.trim() : null;
+
+      // root letter + accidental (if any)
+      const m = main.match(/^([A-Ga-g])([#b]?)(.*)$/);
+      if (!m) return {raw: token, isChord:false};
+
+      const root = m[1].toUpperCase() + (m[2] || '');
+      const suffix = (m[3] || '').trim(); // e.g. m7, maj7, sus4, add9
+      return {
+        raw: token,
+        isChord: true,
+        root,
+        suffix,
+        bass
+      };
+    }
+
+    function transposeNoteName(name, semitones, preferSharps=true){
+      name = normalizeNoteName(name);
+      if (!(name in NAME_TO_INDEX)) return name; // unknown -> return as-is
+      const idx = NAME_TO_INDEX[name];
+      const newName = indexToName(idx + semitones, preferSharps);
+      return newName;
+    }
+
+    // transponer un token completo (maneja slash)
+    function transposeChordToken(token, semitones, preferSharps=true){
+      const parsed = parseChordToken(token);
+      if (!parsed || !parsed.isChord){
+        return token; // leave as-is
+      }
+      const newRoot = transposeNoteName(parsed.root, semitones, preferSharps);
+      let out = newRoot + (parsed.suffix || '');
+      if (parsed.bass){
+        // transpose bass
+        const newBass = transposeNoteName(parsed.bass, semitones, preferSharps);
+        out += '/' + newBass;
+      }
+      return out;
+    }
+
+    function detectPreferSharpsFromText(text){
+      // simple heuristic: if text contains '#' more than 'b', prefer sharps
+      const sharps = (text.match(/#/g) || []).length;
+      const flats = (text.match(/b/g) || []).length;
+      return sharps >= flats;
+    }
+
+    // ---------- UI & LÓGICA ----------
+    const inputText = document.getElementById('inputText');
+    const output = document.getElementById('output');
+    const upBtn = document.getElementById('upBtn');
+    const downBtn = document.getElementById('downBtn');
+    const applyBtn = document.getElementById('applyBtn');
+    const stepsInput = document.getElementById('steps');
+    const copyBtn = document.getElementById('copyBtn');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const detectBtn = document.getElementById('detectBtn');
+    const fromKey = document.getElementById('fromKey');
+    const toKey = document.getElementById('toKey');
+    const direction = document.getElementById('direction');
+
+    // keyboard shortcuts
+    window.addEventListener('keydown', (e)=>{
+      if (e.key === 'M' || e.key === 'm'){ // subir un semitono
+        e.preventDefault(); adjustSteps(1);
+      } else if (e.key === 'N' || e.key === 'n'){ // bajar
+        e.preventDefault(); adjustSteps(-1);
+      }
+    });
+
+    upBtn.addEventListener('click', ()=> adjustSteps(1));
+    downBtn.addEventListener('click', ()=> adjustSteps(-1));
+
+    function adjustSteps(delta){
+      const current = parseInt(stepsInput.value) || 0;
+      stepsInput.value = current + delta;
+    }
+
+    applyBtn.addEventListener('click', ()=> {
+      applyTranspose();
+    });
+
+    copyBtn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(output.textContent || '');
+        copyBtn.textContent = 'Copiado ✓';
+        setTimeout(()=>copyBtn.textContent = 'Copiar', 1200);
+      } catch (err){
+        alert('No se pudo copiar al portapapeles.');
+      }
+    });
+
+    downloadBtn.addEventListener('click', ()=>{
+      const text = output.textContent || '';
+      const blob = new Blob([text], {type:'text/plain;charset=utf-8'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'transposed.txt';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    });
+
+    detectBtn.addEventListener('click', ()=>{
+      // Very basic detection: count occurrences of note names and choose the most frequent.
+      const txt = inputText.value || '';
+      const counts = {};
+      const tokens = txt.split(/\s+/);
+      tokens.forEach(t=>{
+        const p = parseChordToken(t);
+        if (p && p.isChord){
+          const root = p.root;
+          counts[root] = (counts[root]||0) + 1;
+        }
+      });
+      let max = 0, best = null;
+      for (const k in counts){
+        if (counts[k] > max){ max = counts[k]; best = k; }
+      }
+      if (best){
+        fromKey.value = best;
+        alert('Detectada (básico): ' + best + '. Puedes elegir a qué tonalidad trasladar.');
+      } else {
+        alert('No se pudo detectar una tonalidad desde el texto. Asegúrate de tener acordes en formato estándar.');
+      }
+    });
+
+    // main transposition function
+    function applyTranspose(){
+      const text = inputText.value || '';
+      if (!text.trim()){
+        output.textContent = '—';
+        return;
+      }
+      const preferSharps = detectPreferSharpsFromText(text);
+      let semitones = parseInt(stepsInput.value) || 0;
+      // If user selected a target key, compute semitones from that (overrides steps)
+      if (toKey.value){
+        const to = toKey.value;
+        // choose a source key: either explicit fromKey or try detect most common root
+        let from = fromKey.value || detectKeyFromText(text) || null;
+        if (!from) {
+          // fallback: do nothing special, just use given semitones
+        } else {
+          // compute semitone difference
+          if (!(from in NAME_TO_INDEX) || !(to in NAME_TO_INDEX)){
+            // fallback
+          } else {
+            semitones = NAME_TO_INDEX[to] - NAME_TO_INDEX[from];
+          }
+        }
+      } else {
+        // direction can invert sign if 'down' selected and user used positive number
+        if (direction.value === 'down') semitones = -semitones;
+      }
+
+      const lines = text.split(/\r?\n/);
+      const outLines = lines.map(line=>{
+        // split preserving whitespace so alignment remains
+        // We'll replace chord-like tokens but leave words/spaces intact
+        // Tokenize by spaces but keep multiple spaces:
+        const parts = line.split(/(\s+)/); // includes separators
+        const outParts = parts.map(part=>{
+          // if separator (whitespace) return as-is
+          if (/^\s+$/.test(part)) return part;
+          // handle punctuation-endings like ',' or '.' -> we want to keep them
+          const m = part.match(/^([A-Ga-g][#b]?[^,\s]*)?([,.;:]*)$/);
+          if (!m) {
+            // try safe transpose token by token-separator on '/'
+            return transposeChordToken(part, semitones, preferSharps);
+          }
+          const core = m[1] || '';
+          const punct = m[2] || '';
+          if (!core) return part;
+          const trans = transposeChordToken(core, semitones, preferSharps);
+          return trans + punct;
+        });
+        return outParts.join('');
+      });
+
+      output.textContent = outLines.join('\n');
+    }
+
+    function detectKeyFromText(text){
+      // Basic heuristic: count roots and return most frequent (same as detectBtn)
+      const counts = {};
+      const tokens = text.split(/\s+/);
+      tokens.forEach(t=>{
+        const p = parseChordToken(t);
+        if (p && p.isChord){
+          const root = p.root;
+          counts[root] = (counts[root]||0) + 1;
+        }
+      });
+      let max = 0, best = null;
+      for (const k in counts){
+        if (counts[k] > max){ max = counts[k]; best = k; }
+      }
+      return best;
+    }
+
+    // Initialize sample output from placeholder
+    document.getElementById('inputText').value = `A    D    E
+G  Em  C
+Cmaj7  F#dim  Bm`;
+
+    applyTranspose(); // show initial transposition (0 semitones)
+
+    // convenience: update output when steps change (live)
+    stepsInput.addEventListener('input', ()=> {
+      // Do not auto-apply to avoid surprises; but we can show preview by applying:
+      applyTranspose();
+    });
+
+    // allow quick +/- via small buttons next to steps (done above)
+  </script>
+</body>
+</html>

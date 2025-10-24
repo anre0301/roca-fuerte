@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Herramientas del Músico | NotaClave</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      background: linear-gradient(180deg, #4da8d5, #2f7da9, #255f85);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    header {
+      width: 100%;
+      background: linear-gradient(90deg, #4da8d5, #358fbe, #2a78a6);
+      padding: 15px;
+      text-align: center;
+      font-size: 1.6rem;
+      font-weight: 600;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .tools {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 20px;
+      width: 90%;
+      max-width: 900px;
+      margin-top: 40px;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.1);
+      border-radius: 20px;
+      padding: 25px 15px;
+      text-align: center;
+      transition: 0.3s;
+      backdrop-filter: blur(8px);
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      background: rgba(255,255,255,0.18);
+    }
+
+    .icon {
+      font-size: 2.6rem;
+      margin-bottom: 8px;
+    }
+
+    .card a {
+      text-decoration: none;
+      color: #fff;
+      display: block;
+      font-weight: 600;
+      font-size: 1rem;
+    }
+
+    footer {
+      margin-top: auto;
+      padding: 15px;
+      font-size: 0.9rem;
+      color: #cceeff;
+      text-align: center;
+    }
+
+    /* Diseño responsive */
+    @media (max-width: 768px) {
+      .tools {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (min-width: 769px) and (max-width: 1024px) {
+      .tools {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (min-width: 1025px) {
+      .tools {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+
+    /* Botón de retroceso */
+    .back-btn {
+      position: fixed;
+      top: 15px;
+      left: 15px;
+      background: rgba(255,255,255,0.2);
+      border: none;
+      color: #fff;
+      font-size: 1.3rem;
+      padding: 8px 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.3s;
+      z-index: 100;
+      backdrop-filter: blur(5px);
+    }
+
+    .back-btn:hover {
+      background: rgba(255,255,255,0.3);
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+  <button class="back-btn" onclick="window.location.href='index.html'">⬅</button>
+  <header>🎸 Herramientas del Músico</header>
+
+  <div class="tools">
+    <div class="card"><a href="metronomo.html"><div class="icon">⏱️</div>Metrónomo</a></div>
+    <div class="card"><a href="afinador.html"><div class="icon">🎤</div>Afinador</a></div>
+    <div class="card"><a href="transpositor.html"><div class="icon">🔀</div>Transpositor</a></div>
+    <div class="card"><a href="acordes.html"><div class="icon">🎶</div>Generador de Acordes</a></div>
+    <div class="card"><a href="bloc.html"><div class="icon">📝</div>Bloc Musical</a></div>
+    <div class="card"><a href="capo.html"><div class="icon">🎸</div>Guía de Capo</a></div>
+  </div>
+
+  <footer>© 2025 NotaClave - Herramientas para músicos 🎵</footer>
+</body>
+</html>

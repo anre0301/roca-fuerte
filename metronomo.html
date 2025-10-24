@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Metrónomo | NotaClave</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      background: linear-gradient(180deg, #5fb4d7, #3c8fba, #2b6d93);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    header {
+      width: 100%;
+      text-align: center;
+      padding: 15px 0;
+      background: linear-gradient(90deg, #4da8d5, #358fbe, #2a78a6);
+      box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+      font-size: 1.7rem;
+      font-weight: 600;
+      position: sticky;
+      top: 0;
+    }
+
+    .container {
+      background: rgba(255,255,255,0.1);
+      border-radius: 25px;
+      padding: 40px 25px;
+      width: 90%;
+      max-width: 420px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+      margin-top: 30px;
+      text-align: center;
+    }
+
+    .tempo {
+      font-size: 3rem;
+      font-weight: 700;
+      color: #e8faff;
+    }
+
+    .slider {
+      width: 100%;
+      margin: 15px 0 25px 0;
+      accent-color: #00f5d4;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    button {
+      background: #fff;
+      color: #2a78a6;
+      border: none;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 1.1rem;
+      padding: 12px 20px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #dff6ff;
+      transform: scale(1.05);
+    }
+
+    .beats {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 25px;
+    }
+
+    .beat {
+      width: 25px;
+      height: 25px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.3);
+      transition: 0.15s;
+    }
+
+    .beat.active {
+      background: #00f5d4;
+      box-shadow: 0 0 12px #00f5d4;
+      transform: scale(1.2);
+    }
+
+    .pendulo {
+      width: 6px;
+      height: 100px;
+      background: #fff;
+      border-radius: 4px;
+      margin: 25px auto;
+      transform-origin: top center;
+      animation: none;
+    }
+
+    @keyframes balanceo {
+      0% { transform: rotate(-25deg); }
+      50% { transform: rotate(25deg); }
+      100% { transform: rotate(-25deg); }
+    }
+
+    .compas {
+      margin-top: 15px;
+      font-size: 1rem;
+      color: #cdeaff;
+    }
+
+    select {
+      background: rgba(255,255,255,0.2);
+      color: #fff;
+      border: none;
+      padding: 10px;
+      border-radius: 10px;
+      font-size: 1rem;
+      margin-top: 8px;
+      backdrop-filter: blur(5px);
+    }
+
+    .back-btn {
+      position: fixed;
+      top: 15px;
+      left: 15px;
+      background: rgba(255,255,255,0.2);
+      border: none;
+      color: #fff;
+      font-size: 1.3rem;
+      padding: 8px 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.3s;
+      z-index: 100;
+    }
+
+    .back-btn:hover {
+      background: rgba(255,255,255,0.3);
+      transform: scale(1.05);
+    }
+
+    footer {
+      margin-top: 40px;
+      text-align: center;
+      font-size: 0.9rem;
+      color: #cceeff;
+    }
+
+    @media (max-width: 480px) {
+      .container { padding: 30px 20px; }
+      .tempo { font-size: 2.5rem; }
+      button { padding: 10px 15px; }
+    }
+  </style>
+</head>
+<body>
+
+  <button class="back-btn" onclick="window.location.href='herramientas.html'">⬅</button>
+  <header>⏱️ Metrónomo Avanzado</header>
+
+  <div class="container">
+    <div class="tempo" id="tempoValue">100 BPM</div>
+    <input type="range" min="40" max="240" value="100" id="tempoSlider" class="slider">
+
+    <div class="buttons">
+      <button id="decreaseBtn">-</button>
+      <button id="startBtn">▶ Iniciar</button>
+      <button id="increaseBtn">+</button>
+    </div>
+
+    <div class="compas">
+      Compás:
+      <select id="compasSelect">
+        <option value="2">2/4</option>
+        <option value="3">3/4</option>
+        <option value="4" selected>4/4</option>
+        <option value="6">6/8</option>
+      </select>
+    </div>
+
+    <div class="beats" id="beatsContainer"></div>
+
+    <div class="pendulo" id="pendulo"></div>
+  </div>
+
+  <footer>© 2025 NotaClave | Metrónomo profesional 🎶</footer>
+
+  <script>
+    const tempoSlider = document.getElementById("tempoSlider");
+    const tempoValue = document.getElementById("tempoValue");
+    const startBtn = document.getElementById("startBtn");
+    const pendulo = document.getElementById("pendulo");
+    const increaseBtn = document.getElementById("increaseBtn");
+    const decreaseBtn = document.getElementById("decreaseBtn");
+    const beatsContainer = document.getElementById("beatsContainer");
+    const compasSelect = document.getElementById("compasSelect");
+
+    let bpm = 100;
+    let isPlaying = false;
+    let interval = null;
+    let currentBeat = 0;
+    let beatsPerMeasure = 4;
+    let audioCtx;
+
+    function crearBeats() {
+      beatsContainer.innerHTML = "";
+      for (let i = 0; i < beatsPerMeasure; i++) {
+        const div = document.createElement("div");
+        div.classList.add("beat");
+        beatsContainer.appendChild(div);
+      }
+    }
+
+    function actualizarBeats() {
+      document.querySelectorAll(".beat").forEach((b, i) => {
+        b.classList.toggle("active", i === currentBeat);
+      });
+    }
+
+    function actualizarTempo(nuevoTempo) {
+      bpm = nuevoTempo;
+      tempoValue.textContent = `${bpm} BPM`;
+      tempoSlider.value = bpm;
+      if (isPlaying) {
+        clearInterval(interval);
+        iniciarMetronomo();
+      }
+    }
+
+    tempoSlider.addEventListener("input", e => {
+      actualizarTempo(e.target.value);
+    });
+
+    increaseBtn.addEventListener("click", () => {
+      if (bpm < 240) actualizarTempo(bpm + 1);
+    });
+
+    decreaseBtn.addEventListener("click", () => {
+      if (bpm > 40) actualizarTempo(bpm - 1);
+    });
+
+    compasSelect.addEventListener("change", e => {
+      beatsPerMeasure = parseInt(e.target.value);
+      crearBeats();
+    });
+
+    function reproducirClick(isFirst) {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = audioCtx.createOscillator();
+      const gainNode = audioCtx.createGain();
+      osc.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+      osc.frequency.value = isFirst ? 1500 : 1000;
+      gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.05);
+    }
+
+    function iniciarMetronomo() {
+      const intervaloMs = 60000 / bpm;
+      pendulo.style.animation = `balanceo ${intervaloMs / 500}s infinite ease-in-out`;
+      interval = setInterval(() => {
+        reproducirClick(currentBeat === 0);
+        actualizarBeats();
+        currentBeat = (currentBeat + 1) % beatsPerMeasure;
+      }, intervaloMs);
+    }
+
+    function detenerMetronomo() {
+      clearInterval(interval);
+      pendulo.style.animation = "none";
+      document.querySelectorAll(".beat").forEach(b => b.classList.remove("active"));
+      currentBeat = 0;
+    }
+
+    startBtn.addEventListener("click", () => {
+      if (!isPlaying) {
+        iniciarMetronomo();
+        startBtn.textContent = "⏸️ Pausar";
+      } else {
+        detenerMetronomo();
+        startBtn.textContent = "▶ Iniciar";
+      }
+      isPlaying = !isPlaying;
+    });
+
+    crearBeats();
+  </script>
+
+</body>
+</html>

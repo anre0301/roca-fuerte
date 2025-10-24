@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Bloc Musical — NotaClave</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --fondo1:#f3fbff; --fondo2:#dff3ff;
+      --acento:#00aaff; --acento2:#006fd6;
+      --blanco:rgba(255,255,255,0.98);
+      --muted:#6c7b87;
+      --sombra:0 6px 20px rgba(16,24,40,0.06);
+      --radio:14px;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Poppins',sans-serif;background:linear-gradient(180deg,var(--fondo1),var(--fondo2));color:#0b2540;min-height:100vh;}
+    .wrap{max-width:900px;margin:20px auto;padding:18px;}
+    header{
+      background:linear-gradient(90deg,var(--acento),var(--acento2));
+      color:#fff;padding:14px 18px;border-radius:var(--radio);
+      display:flex;align-items:center;justify-content:space-between;
+    }
+    header a{color:#fff;text-decoration:none;font-weight:700;font-size:1rem;}
+    header h1{font-size:1.2rem;margin:0;font-weight:700}
+
+    main{margin-top:20px;display:flex;flex-direction:column;gap:18px;}
+    .panel{
+      background:var(--blanco);padding:16px;border-radius:var(--radio);
+      box-shadow:var(--sombra);
+    }
+    label{font-weight:700;margin-right:6px}
+    textarea{width:100%;height:150px;padding:10px;border-radius:10px;border:1px solid rgba(0,0,0,0.1);font-family:monospace;font-size:1rem;}
+    input[type=text]{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(0,0,0,0.1);font-size:1rem;}
+    .btn{background:linear-gradient(90deg,var(--acento),var(--acento2));color:#fff;border:0;padding:10px 14px;border-radius:10px;font-weight:700;cursor:pointer;margin-top:10px;}
+    .song{background:#f6fcff;padding:10px;border-radius:10px;border:1px solid rgba(0,0,0,0.1);margin-bottom:10px;}
+    .song-title{font-weight:700;font-size:1.1rem;margin-bottom:6px;}
+    .song-actions{margin-top:6px;}
+    .song-actions button{margin-right:6px;padding:4px 8px;border-radius:6px;border:none;cursor:pointer;}
+    .song-actions button.edit{background:#00aaff;color:#fff;}
+    .song-actions button.delete{background:#ff5555;color:#fff;}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a href="herramientas.html">← Volver</a>
+    <h1>Bloc Musical</h1>
+  </header>
+
+  <main>
+    <div class="panel">
+      <label for="songTitle">Título de la canción</label>
+      <input type="text" id="songTitle" placeholder="Nombre de la canción">
+      
+      <label for="songContent">Letra y acordes</label>
+      <textarea id="songContent" placeholder="Escribe tu letra y acordes aquí"></textarea>
+      
+      <button class="btn" id="saveBtn">Guardar canción</button>
+    </div>
+
+    <div class="panel" id="songsList">
+      <h2>Canciones guardadas</h2>
+      <div id="songsContainer"></div>
+    </div>
+  </main>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+  import { getFirestore, doc, setDoc, collection, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBt48uLSA1hO36jXTbdOh7o-O8zQ2VAQ4",
+    authDomain: "roca-fuerte-79965.firebaseapp.com",
+    projectId: "roca-fuerte-79965",
+    storageBucket: "roca-fuerte-79965.firebasestorage.app",
+    messagingSenderId: "997970282203",
+    appId: "1:997970282203:web:e2dcb13d7be47d753eeefe"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  let currentUser = null;
+
+  const songTitleInput = document.getElementById('songTitle');
+  const songContentInput = document.getElementById('songContent');
+  const saveBtn = document.getElementById('saveBtn');
+  const songsContainer = document.getElementById('songsContainer');
+
+  // Cargar canciones del usuario logueado
+  async function loadSongs() {
+    songsContainer.innerHTML = '';
+    if (!currentUser) return;
+    const songsCol = collection(db, 'users', currentUser.uid, 'songs');
+    const songsSnapshot = await getDocs(songsCol);
+    songsSnapshot.forEach(docSnap => {
+      const song = docSnap.data();
+      const songDiv = document.createElement('div');
+      songDiv.className = 'song';
+      songDiv.innerHTML = `
+        <div class="song-title">${song.title}</div>
+        <pre>${song.content}</pre>
+        <div class="song-actions">
+          <button class="edit">Editar</button>
+          <button class="delete">Eliminar</button>
+        </div>
+      `;
+      // Editar
+      songDiv.querySelector('.edit').onclick = () => {
+        songTitleInput.value = song.title;
+        songContentInput.value = song.content;
+        saveBtn.dataset.editId = docSnap.id;
+      };
+      // Eliminar
+      songDiv.querySelector('.delete').onclick = async () => {
+        await deleteDoc(doc(db, 'users', currentUser.uid, 'songs', docSnap.id));
+        loadSongs();
+      };
+      songsContainer.appendChild(songDiv);
+    });
+  }
+
+  // Guardar canción
+  saveBtn.onclick = async () => {
+    if (!currentUser) {
+      alert('No estás logueado.');
+      return;
+    }
+    const title = songTitleInput.value.trim();
+    const content = songContentInput.value.trim();
+    if (!title || !content) return alert('Completa título y contenido');
+
+    const songsCol = collection(db, 'users', currentUser.uid, 'songs');
+    let songId = saveBtn.dataset.editId || crypto.randomUUID();
+
+    await setDoc(doc(songsCol, songId), { title, content });
+    songTitleInput.value = '';
+    songContentInput.value = '';
+    delete saveBtn.dataset.editId;
+    loadSongs();
+  };
+
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      currentUser = user;
+      loadSongs();
+    } else {
+      currentUser = null;
+      songsContainer.innerHTML = '<p>Debes iniciar sesión para ver tus canciones.</p>';
+    }
+  });
+</script>
+</body>
+</html>

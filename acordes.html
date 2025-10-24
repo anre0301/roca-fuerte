@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Generador de Acordes — NotaClave</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg1:#f3fbff; --bg2:#dff3ff;
+      --accent:#00aaff; --accent2:#006fd6;
+      --card:#ffffff; --muted:#6c7b87;
+      --dot:#0b2540; --dot-accent:#006fd6;
+      --radius:12px; --shadow:0 6px 20px rgba(16,24,40,0.06);
+      --fret-height:44px;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;background:linear-gradient(180deg,var(--bg1),var(--bg2));color:#0b2540}
+    .wrap{max-width:1000px;margin:20px auto;padding:18px}
+    header{display:flex;align-items:center;justify-content:space-between;background:linear-gradient(90deg,var(--accent),var(--accent2));padding:14px 18px;border-radius:var(--radius);color:#fff;box-shadow:var(--shadow)}
+    header a{color:#fff;text-decoration:none;font-weight:600}
+    header h1{margin:0;font-size:1.1rem}
+    main{display:grid;grid-template-columns:1fr 340px;gap:18px;margin-top:18px}
+    @media(max-width:920px){main{grid-template-columns:1fr}}
+    .panel{background:var(--card);padding:16px;border-radius:12px;box-shadow:var(--shadow)}
+    .controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+    select,input{padding:10px;border-radius:10px;border:1px solid rgba(0,0,0,0.06);font-weight:600}
+    .btn{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff;border:0;padding:10px 14px;border-radius:10px;cursor:pointer;font-weight:700}
+    .btn.ghost{background:transparent;color:var(--muted);border:1px solid rgba(0,0,0,0.06)}
+    .muted{color:var(--muted)}
+    .diagram-wrap{display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap}
+    .diagram{
+      position:relative;
+      width:220px;
+      padding:14px;
+      border-radius:10px;
+      background:linear-gradient(180deg,#fff,#f7fbff);
+      box-shadow:0 6px 14px rgba(0,0,0,0.04);
+    }
+    .strings{
+      position:relative;
+      width:100%;
+      height: calc(var(--fret-height) * 5); /* show 5 frets by default */
+      display:block;
+      margin-top:6px;
+    }
+    /* vertical string lines - we will draw 6 columns */
+    .string-line{
+      position:absolute;top:0;bottom:0;
+      width:2px;background:#cfdce9;border-radius:2px;
+      transform-origin:center;
+    }
+    /* fret horizontal lines */
+    .fret-line{
+      position:absolute;left:0;right:0;height:1px;background:#dfeefb;
+    }
+    .nut{
+      position:absolute;left:0;right:0;height:8px;background:#111;top:0;border-top-left-radius:6px;border-top-right-radius:6px;
+    }
+    .fret-labels{display:flex;gap:8px;justify-content:space-between;margin-top:8px;font-size:0.9rem;color:var(--muted)}
+    .marker{
+      position:absolute;width:18px;height:18px;border-radius:50%;background:var(--dot-accent);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:11px;
+      transform:translate(-50%,-50%);
+      box-shadow:0 4px 8px rgba(0,0,0,0.12);
+    }
+    .open-muted{
+      display:flex;gap:12px;justify-content:center;margin-top:8px;font-weight:700;
+    }
+    .open-muted div{min-width:18px;text-align:center}
+    .barre{
+      position:absolute;height:18px;border-radius:12px;background:var(--dot-accent);left:0;right:0;transform:translateY(-50%);box-shadow:0 4px 8px rgba(0,0,0,0.12);
+    }
+    .meta{margin-top:12px;display:flex;flex-direction:column;gap:8px}
+    .notes{display:flex;gap:8px;flex-wrap:wrap}
+    .note-pill{background:#f6fcff;border:1px solid rgba(0,0,0,0.04);padding:6px 8px;border-radius:8px;font-weight:700}
+    .chooser{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    .small{font-size:0.9rem;color:var(--muted)}
+    /* small helpers */
+    .inline{display:inline-block}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div style="display:flex;gap:12px;align-items:center">
+        <a href="herramientas.html" title="Volver" style="color:inherit;text-decoration:none;font-weight:700;display:inline-flex;align-items:center;gap:8px">
+          ← Volver
+        </a>
+        <h1>Generador de Acordes</h1>
+      </div>
+    </header>
+
+    <main>
+      <section class="panel" aria-label="Generador de acordes">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+          <div class="chooser">
+            <label for="chordSelect" class="small">Acorde</label>
+            <select id="chordSelect" aria-label="Seleccionar acorde"></select>
+            <button id="prevBtn" class="btn ghost">◀ Prev</button>
+            <button id="nextBtn" class="btn ghost">Next ▶</button>
+          </div>
+
+          <div class="controls">
+            <label class="small muted">Mostrar</label>
+            <select id="showFrets" title="Número de trastes a mostrar">
+              <option value="5">5 trastes</option>
+              <option value="6">6 trastes</option>
+              <option value="7">7 trastes</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="diagram-wrap" style="margin-top:14px">
+          <div class="diagram" id="diagram" role="img" aria-label="Diagrama de acorde">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div style="font-weight:800" id="chordTitle">—</div>
+              <div class="small" id="chordType">—</div>
+            </div>
+
+            <div class="strings" id="stringsArea" style="--fret-height:44px"></div>
+
+            <div class="fret-labels" id="fretLabels"></div>
+
+            <div class="open-muted" id="openMuted"></div>
+            <div class="meta">
+              <div class="small">Notas:</div>
+              <div class="notes" id="notesList"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="panel" aria-label="Lista de acordes">
+        <h3 style="margin:0 0 8px 0">Acordes disponibles</h3>
+        <p class="small muted">Escoge uno del menú o usa Prev/Next.</p>
+        <div style="margin-top:12px;display:flex;flex-direction:column;gap:6px;max-height:60vh;overflow:auto">
+          <div class="small muted">Sugeridos:</div>
+          <div id="chordList" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <script>
+    /***********************************************************************
+     * Generador de acordes con diagramas precisos (EADGBE)
+     *
+     * Notación de acordes:
+     * cada acorde se define como lista de 6 entradas (strings 6 -> 1),
+     * cada entrada: 'x' = mudo, '0' = al aire, 'n' (n>=1) = traste n.
+     *
+     * Ejemplo C: ['x','3','2','0','1','0']  (E A D G B e)
+     ************************************************************************/
+
+    const CHORDS = {
+      // majors
+      "C": { pos:['x','3','2','0','1','0'], type:'Major' },
+      "G": { pos:['3','2','0','0','0','3'], type:'Major' },
+      "D": { pos:['x','x','0','2','3','2'], type:'Major' },
+      "A": { pos:['x','0','2','2','2','0'], type:'Major' },
+      "E": { pos:['0','2','2','1','0','0'], type:'Major' },
+      "F": { pos:['1','3','3','2','1','1'], type:'Major (barre)' },
+      "B": { pos:['x','2','4','4','4','2'], type:'Major (barre)' },
+
+      // minors
+      "Am": { pos:['x','0','2','2','1','0'], type:'Minor' },
+      "Em": { pos:['0','2','2','0','0','0'], type:'Minor' },
+      "Dm": { pos:['x','x','0','2','3','1'], type:'Minor' },
+      "Cm": { pos:['x','3','5','5','4','3'], type:'Minor (barre)' },
+      "Bm": { pos:['x','2','4','4','3','2'], type:'Minor (barre)' },
+
+      // sevenths / maj7
+      "G7": { pos:['3','2','0','0','0','1'], type:'7' },
+      "D7": { pos:['x','x','0','2','1','2'], type:'7' },
+      "E7": { pos:['0','2','0','1','0','0'], type:'7' },
+      "A7": { pos:['x','0','2','0','2','0'], type:'7' },
+      "Cmaj7": { pos:['x','3','2','0','0','0'], type:'Maj7' },
+      "Bm7": { pos:['x','2','0','2','2','0'], type:'m7' },
+
+      // sus / add
+      "Dsus4": { pos:['x','x','0','2','3','3'], type:'sus4' },
+      "Asus2": { pos:['x','0','2','2','0','0'], type:'sus2' },
+
+      // other useful chords
+      "C7": { pos:['x','3','2','3','1','0'], type:'7' },
+      "Gmaj7": { pos:['3','2','0','0','0','2'], type:'Maj7' },
+      "Fmaj7": { pos:['1','3','2','2','1','0'], type:'Maj7' },
+      "Bb": { pos:['x','1','3','3','3','1'], type:'Major (barre)' },
+      "Eb": { pos:['x','6','8','8','8','6'], type:'Major (barre)' },
+      "Cm7": { pos:['x','3','5','3','4','3'], type:'m7 (barre)' },
+      "A#m": { pos:['x','1','3','3','2','1'], type:'Minor (barre)' },
+      "F#m": { pos:['2','4','4','2','2','2'], type:'Minor (barre)' },
+      "Ebm": { pos:['x','6','8','8','7','6'], type:'Minor (barre)' },
+
+      // Power chords (as examples)
+      "G5": { pos:['3','5','5','x','x','x'], type:'5' },
+      "A5": { pos:['x','0','2','2','x','x'], type:'5' },
+
+      // Add more as needed...
+    };
+
+    // Build chord select & list
+    const chordSelect = document.getElementById('chordSelect');
+    const chordList = document.getElementById('chordList');
+
+    const chordNames = Object.keys(CHORDS).sort((a,b)=>a.localeCompare(b));
+
+    chordNames.forEach(name=>{
+      const opt = document.createElement('option');
+      opt.value = name;
+      opt.textContent = name + ' — ' + CHORDS[name].type;
+      chordSelect.appendChild(opt);
+
+      // list button
+      const btn = document.createElement('button');
+      btn.className = 'btn ghost';
+      btn.textContent = name;
+      btn.style.padding = '8px 10px';
+      btn.onclick = ()=> {
+        chordSelect.value = name;
+        renderChord(name);
+      };
+      chordList.appendChild(btn);
+    });
+
+    // UI elements
+    const stringsArea = document.getElementById('stringsArea');
+    const chordTitle = document.getElementById('chordTitle');
+    const chordType = document.getElementById('chordType');
+    const openMuted = document.getElementById('openMuted');
+    const notesList = document.getElementById('notesList');
+    const fretLabels = document.getElementById('fretLabels');
+    const showFrets = document.getElementById('showFrets');
+
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+
+    let currentIndex = chordNames.indexOf('C') >= 0 ? chordNames.indexOf('C') : 0;
+    chordSelect.selectedIndex = currentIndex;
+
+    // helper to compute note names (simple mapping by semitone)
+    const NOTE_NAMES = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+    // reference: E2 = 82.4069 Hz is MIDI 40, A4=440 is 69 -> we'll use semitone math.
+    function freqToNoteName(freq){
+      if (!freq || freq <= 0) return '';
+      const noteNum = 12 * (Math.log(freq / 440) / Math.log(2)) + 69;
+      const rounded = Math.round(noteNum);
+      const noteIndex = (rounded % 12 + 12) % 12;
+      const octave = Math.floor(rounded/12) - 1;
+      return NOTE_NAMES[noteIndex] + octave;
+    }
+
+    // convert string number and fret to frequency (approx) for listing notes
+    // standard tuning freqs:
+    const STRING_FREQ = [82.4069,110.0000,146.8324,196.0000,246.9417,329.6276]; // E2..E4 (6->1)
+    function freqAtFret(stringIndex, fret){
+      // stringIndex 0..5 -> 6..1; fret integer
+      return STRING_FREQ[stringIndex] * Math.pow(2, fret/12);
+    }
+
+    // draw diagram for a chord (name)
+    function renderChord(name){
+      const data = CHORDS[name];
+      if (!data) return;
+      chordTitle.textContent = name;
+      chordType.textContent = data.type || '';
+      chordSelect.value = name;
+      currentIndex = chordNames.indexOf(name);
+
+      // positions (strings 6..1)
+      const pos = data.pos.slice(); // copy
+      // calculate min and max frets used (excluding 'x' and '0')
+      const fretsNum = pos.map(p => (p==='x'||p==='0')? null: Number(p));
+      const usedFrets = fretsNum.filter(n=>n!==null);
+      let minF = usedFrets.length? Math.min(...usedFrets): 1;
+      let maxF = usedFrets.length? Math.max(...usedFrets): 1;
+
+      // prefer showing from fret 1; if minF > 1 and maxF - minF < 4 show minF..minF+4
+      let showCount = Number(showFrets.value) || 5;
+      let startFret = 1;
+      if (minF > 1){
+        startFret = minF;
+      }
+      // adjust so that we always show showCount frets and include maxF
+      if (maxF > startFret + showCount - 1){
+        startFret = Math.max(1, maxF - showCount + 1);
+      }
+      const endFret = startFret + showCount - 1;
+
+      // draw strings area: clear
+      stringsArea.innerHTML = '';
+      // dimensions
+      const width = 220;
+      const stringCount = 6;
+      const leftPad = 20;
+      const rightPad = 20;
+      const usableWidth = width - leftPad - rightPad;
+      const gap = usableWidth / (stringCount - 1);
+
+      // set number of frets area height
+      const fretHeight = parseInt(getComputedStyle(stringsArea).getPropertyValue('--fret-height')) || 44;
+      const totalHeight = fretHeight * showCount;
+      stringsArea.style.height = totalHeight + 'px';
+
+      // draw nut (if startFret==1)
+      if (startFret === 1){
+        const nut = document.createElement('div');
+        nut.className = 'nut';
+        nut.style.top = '0px';
+        stringsArea.appendChild(nut);
+      }
+
+      // draw vertical strings
+      for (let s = 0; s < stringCount; s++){
+        const x = leftPad + (stringCount - 1 - s) * gap; // reverse so string6 left, string1 right
+        const el = document.createElement('div');
+        el.className = 'string-line';
+        el.style.left = x + 'px';
+        stringsArea.appendChild(el);
+      }
+
+      // draw frets
+      for (let f = 0; f <= showCount; f++){
+        const y = f * fretHeight;
+        const line = document.createElement('div');
+        line.className = 'fret-line';
+        line.style.top = y + 'px';
+        stringsArea.appendChild(line);
+      }
+
+      // draw fret labels (small numbers: show start fret..end fret)
+      fretLabels.innerHTML = '';
+      for (let f = startFret; f <= endFret; f++){
+        const span = document.createElement('div');
+        span.textContent = f === 1 ? (startFret === 1 ? '1 (nut)' : '1') : f;
+        // distribute labels evenly under strings area
+        fretLabels.appendChild(span);
+      }
+
+      // open / muted indicators above nut
+      openMuted.innerHTML = '';
+      for (let s = 0; s < stringCount; s++){
+        const idx = s; // stringIndex 0 = low E
+        const p = pos[s];
+        const div = document.createElement('div');
+        div.style.minWidth = '18px';
+        div.style.textAlign = 'center';
+        div.style.fontWeight = '700';
+        if (p === 'x') div.textContent = 'x';
+        else if (p === '0') div.textContent = '0';
+        else div.textContent = '';
+        openMuted.appendChild(div);
+      }
+
+      // place markers (dots) and detect barres
+      // Map string positions into objects for later barre detection
+      // each entry: {stringIndex (0..5 low->high), fretNumber or null}
+      const placements = [];
+      for (let s = 0; s < stringCount; s++){
+        const p = pos[s];
+        let fret = null;
+        if (p !== 'x' && p !== '0') fret = Number(p);
+        placements.push({stringIndex: s, fret});
+      }
+
+      // barre detection: find contiguous runs (by adjacent string indexes) with same fret>0 length>=2
+      const barreRuns = []; // {fret, startIndex, endIndex}
+      for (let i = 0; i < placements.length; ){
+        if (placements[i].fret){
+          const fVal = placements[i].fret;
+          let j = i+1;
+          while (j < placements.length && placements[j].fret === fVal) j++;
+          const runLen = j - i;
+          if (runLen >= 2){
+            // add run range i..j-1
+            barreRuns.push({fret: fVal, startIndex: i, endIndex: j-1});
+          }
+          i = j;
+        } else {
+          i++;
+        }
+      }
+
+      // but we must only draw barres that are contiguous across adjacent strings physically (strings are ordered 6..1),
+      // and ensure we draw highest priority barre (lowest fret position if overlaps)
+      // We'll filter barreRuns to include only those where all strings in the run have that fret.
+      // (already true by construction)
+
+      // Now draw individual markers for strings with fret within visible range
+      placements.forEach(pl => {
+        if (pl.fret === null) return;
+        const fret = pl.fret;
+        // only draw if visible (startFret..endFret)
+        if (fret < startFret || fret > endFret) return;
+        const fretIndex = fret - startFret + 1; // 1..showCount
+        const y = (fretIndex - 0.5) * fretHeight;
+        // compute x coordinate
+        const s = pl.stringIndex;
+        const x = leftPad + (stringCount - 1 - s) * gap;
+        const marker = document.createElement('div');
+        marker.className = 'marker';
+        marker.style.left = x + 'px';
+        marker.style.top = y + 'px';
+        // small label with fret number if high fret (optional)
+        marker.title = `Traste ${fret} - cuerda ${6 - s}`;
+        stringsArea.appendChild(marker);
+      });
+
+      // Draw barre rectangles for detected runs that are visible (and longer than 1)
+      // Map string index to x coordinate and compute left-right for a run.
+      barreRuns.forEach(run => {
+        const f = run.fret;
+        if (f < startFret || f > endFret) return;
+        const fretIndex = f - startFret + 1;
+        const y = (fretIndex - 0.5) * fretHeight;
+        const sStart = run.startIndex;
+        const sEnd = run.endIndex;
+        const xStart = leftPad + (stringCount - 1 - sStart) * gap;
+        const xEnd = leftPad + (stringCount - 1 - sEnd) * gap;
+        const barre = document.createElement('div');
+        barre.className = 'barre';
+        // left and right positions - subtract half marker width so barre sits nicely
+        const left = Math.min(xStart, xEnd) - 12;
+        const right = Math.max(xStart, xEnd) + 12;
+        barre.style.left = left + 'px';
+        barre.style.width = (right - left) + 'px';
+        barre.style.top = y + 'px';
+        stringsArea.appendChild(barre);
+      });
+
+      // show open/muted per string more clearly (above nut area)
+      // display from low E to high e
+      openMuted.innerHTML = '';
+      for (let s = 0; s < placements.length; s++){
+        const p = pos[s];
+        const d = document.createElement('div');
+        d.textContent = (p === 'x' ? 'x' : (p === '0' ? '0' : ''));
+        d.className = 'inline';
+        openMuted.appendChild(d);
+      }
+
+      // Notes listing (approximate)
+      notesList.innerHTML = '';
+      for (let s = 0; s < placements.length; s++){
+        const p = pos[s];
+        if (p === 'x') continue;
+        if (p === '0'){
+          // open string note
+          const noteName = freqToNoteName(STRING_FREQ[s]);
+          const pill = document.createElement('div'); pill.className='note-pill'; pill.textContent = noteName + ' (open)';
+          notesList.appendChild(pill);
+        } else {
+          const fret = Number(p);
+          const freq = freqAtFret(s, fret);
+          const noteName = freqToNoteName(freq);
+          const pill = document.createElement('div'); pill.className='note-pill'; pill.textContent = noteName + ' (f' + fret +')';
+          notesList.appendChild(pill);
+        }
+      }
+
+      // highlight open strings or muted text is already above.
+
+      // Update URL hash for direct linking
+      location.hash = name;
+    } // renderChord
+
+    // Prev/Next handlers
+    prevBtn.addEventListener('click', ()=>{
+      currentIndex = (currentIndex - 1 + chordNames.length) % chordNames.length;
+      const name = chordNames[currentIndex];
+      chordSelect.value = name;
+      renderChord(name);
+    });
+    nextBtn.addEventListener('click', ()=>{
+      currentIndex = (currentIndex + 1) % chordNames.length;
+      const name = chordNames[currentIndex];
+      chordSelect.value = name;
+      renderChord(name);
+    });
+
+    chordSelect.addEventListener('change', (e)=>{
+      const name = e.target.value;
+      renderChord(name);
+    });
+
+    showFrets.addEventListener('change', ()=> {
+      // re-render current chord with new fret count
+      renderChord(chordSelect.value || chordNames[currentIndex]);
+    });
+
+    // Load chord from URL hash if present
+    function initFromHash(){
+      const h = location.hash.replace('#','');
+      if (h && CHORDS[h]) {
+        chordSelect.value = h;
+        currentIndex = chordNames.indexOf(h);
+        renderChord(h);
+        return;
+      }
+      // else default to C
+      const def = chordNames.includes('C') ? 'C' : chordNames[0];
+      chordSelect.value = def;
+      currentIndex = chordNames.indexOf(def);
+      renderChord(def);
+    }
+
+    initFromHash();
+
+    // keyboard shortcuts
+    window.addEventListener('keydown', (e)=>{
+      if (e.key === 'ArrowLeft') prevBtn.click();
+      if (e.key === 'ArrowRight') nextBtn.click();
+      if (e.key === '+' || e.key === '=') {
+        showFrets.value = Math.min(7, Number(showFrets.value) + 1);
+        renderChord(chordSelect.value);
+      }
+      if (e.key === '-') {
+        showFrets.value = Math.max(4, Number(showFrets.value) - 1);
+        renderChord(chordSelect.value);
+      }
+    });
+
+    // small touch: ensure rendering on resize so positions remain correct
+    window.addEventListener('resize', ()=> {
+      renderChord(chordSelect.value || chordNames[currentIndex]);
+    });
+
+    // accessible focus: clicking list button focuses select
+    chordList.querySelectorAll('button').forEach(b=>b.addEventListener('keydown', (e)=>{ if (e.key === 'Enter') b.click(); }));
+
+  </script>
+</body>
+</html>

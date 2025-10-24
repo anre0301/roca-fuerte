@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Afinador — NotaClave</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --fondo1:#e9f9ff; --fondo2:#c3ebff;
+      --acento:#00aaff; --acento2:#006fd6;
+      --blanco:rgba(255,255,255,0.97);
+      --muted:#6c7b87;
+      --bueno:#00c776; --malo:#ff6868;
+      --radio:12px; --sombra: 0 6px 20px rgba(16,24,40,0.08);
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%;font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;background:linear-gradient(180deg,var(--fondo1),var(--fondo2));color:#0b2540}
+    .wrap{max-width:1100px;margin:20px auto;padding:18px}
+
+    header{
+      background:linear-gradient(90deg,var(--acento),var(--acento2));
+      color:#fff;padding:14px 18px;border-radius:var(--radio);box-shadow:var(--sombra);
+      display:flex;align-items:center;justify-content:center;gap:12px;
+      position:relative;
+    }
+    header h1{
+      font-size:1.12rem;
+      margin:0;
+      font-weight:700;
+      text-align:center;
+    }
+    header .back-btn{
+      position:absolute;
+      left:15px;
+      background:none;
+      border:none;
+      color:#fff;
+      font-size:1.4rem;
+      text-decoration:none;
+      font-weight:700;
+      cursor:pointer;
+      transition:opacity .2s;
+    }
+    header .back-btn:hover{opacity:0.8}
+
+    .meta{opacity:0.95;font-weight:500;font-size:0.95rem;margin-top:4px;text-align:center}
+
+    .layout{display:grid;grid-template-columns:1fr 420px;gap:18px;margin-top:18px;align-items:start}
+    @media(max-width:900px){.layout{grid-template-columns:1fr}}
+
+    .panel{background:var(--blanco);border-radius:var(--radio);padding:16px;box-shadow:var(--sombra)}
+    .controls{display:flex;gap:10px;flex-wrap:wrap}
+    .btn{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(90deg,var(--acento),var(--acento2));color:#fff;border:none;padding:10px 12px;border-radius:10px;font-weight:700;cursor:pointer;transition:transform .12s}
+    .btn:active{transform:translateY(1px)}
+    .btn.ghost{background:transparent;color:var(--muted);border:1px solid rgba(0,0,0,0.06)}
+    .note-big{font-size:2.6rem;font-weight:800;margin-top:6px}
+    .freq{color:var(--muted);margin-top:6px}
+    .small-muted{font-size:0.88rem;color:var(--muted)}
+
+    .tuner{display:flex;flex-direction:column;align-items:center;padding:12px}
+    .gauge{width:100%;max-width:320px;height:10px;margin:14px 0;background:#efefef;border-radius:10px;position:relative}
+    .gauge .mark{position:absolute;left:50%;top:-10px;width:2px;height:28px;background:rgba(0,0,0,0.12);transform:translateX(-50%);border-radius:2px}
+    .gauge .bar{position:absolute;left:0;top:0;height:100%;border-radius:10px;background:linear-gradient(90deg,var(--malo),#ffd36b,var(--bueno));width:50%;transition:width .08s linear}
+
+    .cents{font-weight:700;margin-top:6px}
+    .status{margin-top:8px;font-weight:700}
+
+    .strings{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+    .string-item{
+      display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px;border-radius:10px;
+      background:linear-gradient(90deg,#fff,#f7fbff);cursor:pointer;border:1px solid rgba(0,0,0,0.04);transition:transform .12s,box-shadow .12s;
+      user-select:none;
+    }
+    .string-item:hover{transform:translateY(-3px);box-shadow:0 8px 18px rgba(0,0,0,0.04)}
+    .string-item.selected{background:linear-gradient(90deg,#e7f7ff,#dff4ff);border-color:rgba(0,0,110,0.12)}
+    .string-left{display:flex;align-items:center;gap:10px}
+    .string-label{width:38px;height:38px;border-radius:8px;background:linear-gradient(90deg,#fff,#f1f7ff);display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--acento2);box-shadow:0 3px 8px rgba(0,0,0,0.04)}
+    .string-note{font-weight:700}
+    .string-meta{color:var(--muted);font-size:0.92rem}
+    .hint{margin-top:12px;color:var(--muted);font-size:0.9rem}
+
+    .string-item:focus{outline:3px solid rgba(0,120,220,0.12);outline-offset:3px}
+    .row{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-top:8px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <a href="herramientas.html" class="back-btn">←</a>
+      <h1>Afinador</h1>
+    </header>
+
+    <div class="layout">
+      <!-- LEFT: tuner -->
+      <main class="panel" aria-label="Afinador principal">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div style="font-weight:700">Controles</div>
+          <div class="small-muted">Permite micrófono para funcionar</div>
+        </div>
+
+        <!-- Resto de tu código original sigue abajo -->
+
+
+        <div class="row" style="margin-top:10px">
+          <div class="controls">
+            <button id="startBtn" class="btn" type="button">🎤 Iniciar micrófono</button>
+            <button id="stopBtn" class="btn ghost" type="button">⏹ Detener</button>
+          </div>
+        </div>
+
+        <section class="tuner" aria-live="polite" aria-atomic="true" style="margin-top:12px">
+          <div class="small-muted">OBJETIVO</div>
+          <div id="targetLabel" class="note-big" aria-live="polite">—</div>
+          <div id="targetFreq" class="freq">— Hz</div>
+
+          <div style="height:10px"></div>
+
+          <div class="small-muted">DETECTADO</div>
+          <div id="detectedNote" class="note-big">—</div>
+          <div id="detectedFreq" class="freq">— Hz</div>
+
+          <div class="gauge" aria-hidden="true" style="margin-top:12px">
+            <div class="mark"></div>
+            <div id="gaugeBar" class="bar" style="width:50%"></div>
+          </div>
+
+          <div id="centsText" class="cents">— cents</div>
+          <div id="tuneStatus" class="status">Sin señal</div>
+
+          <div class="hint">Haz clic en la cuerda que quieres afinar — la app escuchará y te dirá si está baja/alta o afinada.</div>
+        </section>
+      </main>
+
+      <!-- RIGHT: strings -->
+      <aside class="panel" aria-label="Cuerdas">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div style="font-weight:700">Cuerdas (clic para seleccionar)</div>
+          <div class="small-muted">1 = mi agudo → 6 = mi grave</div>
+        </div>
+
+        <nav class="strings" role="list" aria-label="Lista de cuerdas" style="margin-top:12px">
+          <div class="string-item" role="button" tabindex="0" data-note="E4" data-freq="329.63">
+            <div class="string-left">
+              <div class="string-label">1</div>
+              <div>
+                <div class="string-note">E (mi)</div>
+                <div class="string-meta">329.63 Hz</div>
+              </div>
+            </div>
+            <div class="string-right small-muted">Seleccionar</div>
+          </div>
+
+          <div class="string-item" role="button" tabindex="0" data-note="B3" data-freq="246.94">
+            <div class="string-left">
+              <div class="string-label">2</div>
+              <div>
+                <div class="string-note">B (si)</div>
+                <div class="string-meta">246.94 Hz</div>
+              </div>
+            </div>
+            <div class="string-right small-muted">Seleccionar</div>
+          </div>
+
+          <div class="string-item" role="button" tabindex="0" data-note="G3" data-freq="196.00">
+            <div class="string-left">
+              <div class="string-label">3</div>
+              <div>
+                <div class="string-note">G (sol)</div>
+                <div class="string-meta">196.00 Hz</div>
+              </div>
+            </div>
+            <div class="string-right small-muted">Seleccionar</div>
+          </div>
+
+          <div class="string-item" role="button" tabindex="0" data-note="D3" data-freq="146.83">
+            <div class="string-left">
+              <div class="string-label">4</div>
+              <div>
+                <div class="string-note">D (re)</div>
+                <div class="string-meta">146.83 Hz</div>
+              </div>
+            </div>
+            <div class="string-right small-muted">Seleccionar</div>
+          </div>
+
+          <div class="string-item" role="button" tabindex="0" data-note="A2" data-freq="110.00">
+            <div class="string-left">
+              <div class="string-label">5</div>
+              <div>
+                <div class="string-note">A (la)</div>
+                <div class="string-meta">110.00 Hz</div>
+              </div>
+            </div>
+            <div class="string-right small-muted">Seleccionar</div>
+          </div>
+
+          <div class="string-item" role="button" tabindex="0" data-note="E2" data-freq="82.41">
+            <div class="string-left">
+              <div class="string-label">6</div>
+              <div>
+                <div class="string-note">E (mi grave)</div>
+                <div class="string-meta">82.41 Hz</div>
+              </div>
+            </div>
+            <div class="string-right small-muted">Seleccionar</div>
+          </div>
+        </nav>
+
+        <div class="hint" style="margin-top:12px">Consejo: mantén la cuerda sonando de forma limpia (sin demasiado ruido de fondo) para mejor precisión.</div>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    /*
+      Afinador funcional:
+      - Click en una cuerda -> selecciona objetivo (nota+frecuencia)
+      - Iniciar micrófono -> analiza audio por autocorrelación
+      - Muestra nota detectada, frecuencia, cents respecto al objetivo y estado visual
+      - No reproduce referencia (tal como pediste)
+    */
+
+    // frecuencias de referencia para las 6 cuerdas (E2..E4)
+    const STRINGS = [
+      {note:'E4', freq:329.63},
+      {note:'B3', freq:246.94},
+      {note:'G3', freq:196.00},
+      {note:'D3', freq:146.83},
+      {note:'A2', freq:110.00},
+      {note:'E2', freq:82.41},
+    ];
+
+    // elementos UI
+    const startBtn = document.getElementById('startBtn');
+    const stopBtn  = document.getElementById('stopBtn');
+    const targetLabel = document.getElementById('targetLabel');
+    const targetFreq  = document.getElementById('targetFreq');
+    const detectedNote = document.getElementById('detectedNote');
+    const detectedFreq = document.getElementById('detectedFreq');
+    const gaugeBar = document.getElementById('gaugeBar');
+    const centsText = document.getElementById('centsText');
+    const tuneStatus = document.getElementById('tuneStatus');
+    const stringItems = Array.from(document.querySelectorAll('.string-item'));
+
+    // audio / analysis state
+    let audioCtx = null;
+    let analyser = null;
+    let micSource = null;
+    let mediaStream = null;
+    let rafId = null;
+    let buffer = null;
+
+    // selected target (default: A2)
+    let currentTarget = {note:'A2', freq:110.00};
+    setTarget(currentTarget.note, currentTarget.freq);
+
+    // map element -> selection handlers
+    stringItems.forEach(item=>{
+      // click selects
+      item.addEventListener('click', ()=> {
+        const n = item.dataset.note;
+        const f = parseFloat(item.dataset.freq);
+        setTarget(n,f);
+        // visual highlight
+        stringItems.forEach(x=>x.classList.remove('selected'));
+        item.classList.add('selected');
+      });
+      // keyboard accessibility
+      item.addEventListener('keydown', (e)=>{
+        if(e.key === 'Enter' || e.key === ' '){
+          e.preventDefault();
+          item.click();
+        }
+      });
+    });
+
+    // set target UI and state
+    function setTarget(note, freq){
+      currentTarget = {note,freq};
+      targetLabel.textContent = note;
+      targetFreq.textContent = freq.toFixed(2) + ' Hz';
+    }
+
+    // --- pitch detection (autocorrelation) ---
+    // returns pitch in Hz or -1 if no pitch
+    function autoCorrelate(buf, sampleRate){
+      // buf is Float32Array
+      const SIZE = buf.length;
+      let rms = 0;
+      for (let i=0;i<SIZE;i++){ const val = buf[i]; rms += val*val; }
+      rms = Math.sqrt(rms / SIZE);
+      if (rms < 0.01) return -1; // silence
+
+      // Trim edges
+      let r1 = 0, r2 = SIZE - 1, th = 0.2;
+      for (let i = 0; i < SIZE/2; i++) { if (Math.abs(buf[i]) < th) { r1 = i; break; } }
+      for (let i = 1; i < SIZE/2; i++) { if (Math.abs(buf[SIZE - i]) < th) { r2 = SIZE - i; break; } }
+      const trimmed = buf.slice(r1, r2);
+      const newSize = trimmed.length;
+      if (newSize < 32) return -1;
+
+      // autocorrelation
+      const c = new Array(newSize).fill(0);
+      for (let i = 0; i < newSize; i++){
+        for (let j = 0; j < newSize - i; j++){
+          c[i] += trimmed[j]*trimmed[j+i];
+        }
+      }
+
+      // find first dip
+      let d = 0;
+      while (c[d] > c[d+1]) d++;
+      // find max after dip
+      let maxval = -1, maxpos = -1;
+      for (let i = d; i < newSize; i++){
+        if (c[i] > maxval) { maxval = c[i]; maxpos = i; }
+      }
+      if (maxpos === -1) return -1;
+
+      // parabolic interpolation for better precision
+      const T0 = maxpos;
+      const x1 = c[T0-1], x2 = c[T0], x3 = c[T0+1];
+      const a = (x1 + x3 - 2*x2) / 2;
+      const b = (x3 - x1) / 2;
+      let shift = 0;
+      if (a) shift = -b / (2*a);
+      const pitch = sampleRate / (T0 + shift);
+      return pitch;
+    }
+
+    // compute cents difference between detected freq and target freq
+    function centsDifference(detectedFreq, targetFreq){
+      if (!detectedFreq || !targetFreq) return null;
+      const cents = 1200 * Math.log2(detectedFreq / targetFreq);
+      return Math.round(cents);
+    }
+
+    // process loop
+    function processLoop(){
+      if (!analyser) return;
+      analyser.getFloatTimeDomainData(buffer);
+      const pitch = autoCorrelate(buffer, audioCtx.sampleRate);
+
+      if (pitch === -1){
+        detectedNote.textContent = '—';
+        detectedFreq.textContent = '— Hz';
+        centsText.textContent = '— cents';
+        tuneStatus.textContent = 'Sin señal';
+        gaugeBar.style.width = '50%';
+      } else {
+        // detected note name (closest)
+        const noteName = freqToNoteName(pitch);
+        detectedNote.textContent = noteName;
+        detectedFreq.textContent = pitch.toFixed(2) + ' Hz';
+
+        const cents = centsDifference(pitch, currentTarget.freq);
+        centsText.textContent = (cents >= 0 ? '+' : '') + cents + ' cents';
+
+        // gauge mapping: -50 cents -> 0% ; 0 -> 50% ; +50 -> 100%
+        const limited = Math.max(-100, Math.min(100, cents));
+        const pct = 50 + (limited / 200) * 100;
+        gaugeBar.style.width = pct + '%';
+
+        // status text & color
+        if (Math.abs(cents) <= 5){
+          tuneStatus.textContent = `Afinado ✓ ( ${currentTarget.note} )`;
+          tuneStatus.style.color = 'var(--bueno)';
+        } else if (Math.abs(cents) <= 20){
+          tuneStatus.textContent = 'Casi ✓';
+          tuneStatus.style.color = '#ffb703';
+        } else {
+          tuneStatus.textContent = 'Desafinado ✗';
+          tuneStatus.style.color = 'var(--malo)';
+        }
+      }
+      rafId = requestAnimationFrame(processLoop);
+    }
+
+    // helper: convert freq to nearest note name (simple)
+    const NOTE_NAMES = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+    function freqToNoteName(freq){
+      if (!freq || freq <= 0) return '—';
+      const noteNum = 12 * (Math.log(freq / 440) / Math.log(2)) + 69;
+      const rounded = Math.round(noteNum);
+      const noteIndex = (rounded % 12 + 12) % 12;
+      const octave = Math.floor(rounded / 12) - 1;
+      return NOTE_NAMES[noteIndex] + octave;
+    }
+
+    // start microphone and analysis
+    async function startMic(){
+      try {
+        if (mediaStream) {
+          // already started
+          return;
+        }
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        mediaStream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true }, video: false });
+        micSource = audioCtx.createMediaStreamSource(mediaStream);
+        analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 2048;
+        buffer = new Float32Array(analyser.fftSize);
+        micSource.connect(analyser);
+
+        // visual feedback
+        tuneStatus.textContent = 'Escuchando...';
+        tuneStatus.style.color = 'var(--muted)';
+
+        // start loop
+        if (rafId) cancelAnimationFrame(rafId);
+        rafId = requestAnimationFrame(processLoop);
+      } catch (err) {
+        console.error('Error accediendo al micrófono:', err);
+        alert('No se pudo acceder al micrófono. Revisa permisos o usa HTTPS.');
+      }
+    }
+
+    function stopMic(){
+      if (rafId) cancelAnimationFrame(rafId);
+      rafId = null;
+      if (mediaStream) {
+        mediaStream.getTracks().forEach(t => t.stop());
+        mediaStream = null;
+      }
+      if (audioCtx) {
+        try { audioCtx.close(); } catch(e) {}
+        audioCtx = null;
+        analyser = null;
+        micSource = null;
+      }
+      // reset UI
+      detectedNote.textContent = '—';
+      detectedFreq.textContent = '— Hz';
+      centsText.textContent = '— cents';
+      tuneStatus.textContent = 'Detenido';
+      tuneStatus.style.color = 'var(--muted)';
+      gaugeBar.style.width = '50%';
+    }
+
+    // wire buttons
+    document.getElementById('startBtn').addEventListener('click', startMic);
+    document.getElementById('stopBtn').addEventListener('click', stopMic);
+
+    // clean up when leaving page
+    window.addEventListener('pagehide', ()=>{ stopMic(); });
+
+    // initialize: mark default selected string (A2)
+    (function markDefault(){
+      // find string with freq 110
+      const el = stringItems.find(si => parseFloat(si.dataset.freq) === 110.00);
+      if (el){
+        el.classList.add('selected');
+        setTarget(el.dataset.note, parseFloat(el.dataset.freq));
+      }
+    })();
+
+    // keyboard: start mic with 'm', stop with 's'
+    window.addEventListener('keydown', (e)=>{
+      if (e.key.toLowerCase() === 'm') startMic();
+      if (e.key.toLowerCase() === 's') stopMic();
+    });
+
+  </script>
+</body>
+</html>
